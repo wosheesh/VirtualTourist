@@ -32,27 +32,11 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         // set the delegate for fetchedResultsController
         fetchedResultsController.delegate = self
         
-        // declare annotations array for the map
-        var annotations = [MKPointAnnotation]()
-        
         // load all locations as Pins from context
         let locations = loadAllPins()
-        print(locations)
-        
-        // ... and and add them to the locationMap
-        for location in locations {
-            let lat = CLLocationDegrees(location.latitude) 
-            let long = CLLocationDegrees(location.longitude)
-            let coordinate = CLLocationCoordinate2DMake(lat, long)
-            
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            
-            annotations.append(annotation)
-        }
         
         // add annotations to the mapView
-        travelMap.addAnnotations(annotations)
+        travelMap.addAnnotations(locations)
         
         // add a gesture recogniser to the map for adding pins
         let longPress = UILongPressGestureRecognizer(target: self, action: "userPressedOnMap:")
@@ -60,30 +44,29 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         travelMap.addGestureRecognizer(longPress)
     }
     
-    
-    
     // MARK: - Actions
     
     func userPressedOnMap(gestureRecognizer: UIGestureRecognizer) {
         
         // TODO: implement drag gesture
-        if gestureRecognizer.state != .Began { return }
-        print("user pressed on map for longer")
         
         let touchPoint = gestureRecognizer.locationInView(travelMap)
-        let newCoord = travelMap.convertPoint(touchPoint, toCoordinateFromView: travelMap)
+        let touchCoord = travelMap.convertPoint(touchPoint, toCoordinateFromView: travelMap)
         
-        let newAnnotation = MKPointAnnotation()
-        newAnnotation.coordinate = newCoord
-        
-        // add a new Pin object to the database
-        let pinToBeAdded = Pin(coordinates: newCoord, context: sharedContext)
-
-        // add the new annotation to the map
-        travelMap.addAnnotation(newAnnotation)
-        
-        // save the change in the CoreData
-        saveContext()
+        if UIGestureRecognizerState.Began == gestureRecognizer.state {
+            
+            // create a new Pin object in CoreData
+            let newPin = Pin(annotationLatitude: touchCoord.latitude,
+                annotationLongitude: touchCoord.longitude,
+                context: sharedContext)
+            
+            // add the new annotation to the map
+            travelMap.addAnnotation(newPin)
+            
+            // save the change in the CoreData
+            saveContext()
+        }
+  
     }
     
     // MARK: - CoreData Helpers
@@ -124,7 +107,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         
         if pinView == nil {
             pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.canShowCallout = true
+            pinView!.canShowCallout = false
             pinView!.animatesDrop = true
             pinView!.pinTintColor = UIColor(red: 0.984, green: 0.227, blue: 0.184, alpha: 1.00)
             pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
@@ -136,11 +119,18 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         return pinView
     }
     
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-        //TODO: Segue if a pin is tapped
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
+        let controller = storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbum") as! PhotoAlbumVC
+        
+        // passing the selected pin to PhotoAlbumVC
+        controller.pin = view.annotation as! Pin
+        
+        // using nav controller to push the PhotoAlbumVC
+        navigationController!.pushViewController(controller, animated: true)
+
     }
-    
-    
+
 
 }
 

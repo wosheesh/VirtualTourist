@@ -19,13 +19,23 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var photoCollection: UICollectionView!
     @IBOutlet weak var bottomButton: UIButton!
     
+    var pin: MKAnnotation?
+    
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // load the pin passed from TravelLocationsVC to the mapView
+        locationMap.addAnnotation(pin!)
+        
     }
-
     
+}
 
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
+
+// TODO: Add UICollectionViewDataSource delegate in storyboard
+
+extension PhotoAlbumVC: UICollectionViewDelegate {
     
 }

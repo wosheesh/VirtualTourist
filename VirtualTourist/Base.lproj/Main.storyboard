@@ -63,7 +63,7 @@
         <!--Photo Album-->
         <scene sceneID="F2H-58-oUu">
             <objects>
-                <viewController title="Photo Album" id="8sQ-Az-gsM" customClass="PhotoAlbumVC" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PhotoAlbum" title="Photo Album" id="8sQ-Az-gsM" customClass="PhotoAlbumVC" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ci2-FV-U1p"/>
                         <viewControllerLayoutGuide type="bottom" id="MNQ-6J-N0D"/>
@@ -92,7 +92,6 @@
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
-                                    <outlet property="dataSource" destination="8sQ-Az-gsM" id="uq5-Xn-X3M"/>
                                     <outlet property="delegate" destination="8sQ-Az-gsM" id="pD3-nj-cOv"/>
                                 </connections>
                             </collectionView>
