@@ -19,5 +19,10 @@ class PhotoAlbumVC: UIViewController {
     @IBOutlet weak var photoCollection: UICollectionView!
     @IBOutlet weak var bottomButton: UIButton!
     
+    // MARK: - LifeCycle
+    
+    // MARK: - locationMap
+    
+    // MARK: - 
     
 }
