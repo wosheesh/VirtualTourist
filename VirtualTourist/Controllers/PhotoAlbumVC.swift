@@ -11,7 +11,7 @@ import MapKit
 
 
 
-class PhotoAlbumVC: UIViewController {
+class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
     
     // MARK: - Properties
     
@@ -20,9 +20,12 @@ class PhotoAlbumVC: UIViewController {
     @IBOutlet weak var bottomButton: UIButton!
     
     // MARK: - LifeCycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+    }
+
     
-    // MARK: - locationMap
-    
-    // MARK: - 
+
     
 }

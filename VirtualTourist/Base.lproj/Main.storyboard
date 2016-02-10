@@ -36,6 +36,9 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="PP3-RZ-i0b">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="F9F-Qn-gjl"/>
+                                </connections>
                             </mapView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -88,9 +91,16 @@
                                         </view>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="8sQ-Az-gsM" id="uq5-Xn-X3M"/>
+                                    <outlet property="delegate" destination="8sQ-Az-gsM" id="pD3-nj-cOv"/>
+                                </connections>
                             </collectionView>
                             <mapView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" mapType="standard" zoomEnabled="NO" scrollEnabled="NO" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="44Z-TI-SLk">
                                 <rect key="frame" x="0.0" y="64" width="600" height="116"/>
+                                <connections>
+                                    <outlet property="delegate" destination="8sQ-Az-gsM" id="rFi-SA-zTU"/>
+                                </connections>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x2O-gG-CaT">
                                 <rect key="frame" x="0.0" y="570" width="600" height="30"/>
