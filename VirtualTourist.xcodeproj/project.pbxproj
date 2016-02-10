@@ -18,7 +18,7 @@
 /* Begin PBXFileReference section */
 		FEB6A4BF1C6B36350050E621 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEB6A4C21C6B36350050E621 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FEB6A4C41C6B36350050E621 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FEB6A4C41C6B36350050E621 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = Controllers/ViewController.swift; sourceTree = "<group>"; };
 		FEB6A4C71C6B36350050E621 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FEB6A4CA1C6B36350050E621 /* VirtualTourist.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = VirtualTourist.xcdatamodel; sourceTree = "<group>"; };
 		FEB6A4CC1C6B36350050E621 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -37,6 +37,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FE135BD11C6B372000BF8151 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				FEB6A4C41C6B36350050E621 /* ViewController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		FE135BD21C6B373E00BF8151 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FEB6A4C91C6B36350050E621 /* VirtualTourist.xcdatamodeld */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		FE135BD31C6B375300BF8151 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		FE135BD41C6B375A00BF8151 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
 		FEB6A4B61C6B36350050E621 = {
 			isa = PBXGroup;
 			children = (
@@ -56,13 +86,15 @@
 		FEB6A4C11C6B36350050E621 /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				FE135BD21C6B373E00BF8151 /* Models */,
+				FE135BD31C6B375300BF8151 /* Views */,
+				FE135BD11C6B372000BF8151 /* Controllers */,
 				FEB6A4C21C6B36350050E621 /* AppDelegate.swift */,
-				FEB6A4C41C6B36350050E621 /* ViewController.swift */,
 				FEB6A4C61C6B36350050E621 /* Main.storyboard */,
-				FEB6A4CC1C6B36350050E621 /* Assets.xcassets */,
 				FEB6A4CE1C6B36350050E621 /* LaunchScreen.storyboard */,
 				FEB6A4D11C6B36350050E621 /* Info.plist */,
-				FEB6A4C91C6B36350050E621 /* VirtualTourist.xcdatamodeld */,
+				FEB6A4CC1C6B36350050E621 /* Assets.xcassets */,
+				FE135BD41C6B375A00BF8151 /* Helpers */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -289,6 +321,7 @@
 				FEB6A4D61C6B36350050E621 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
