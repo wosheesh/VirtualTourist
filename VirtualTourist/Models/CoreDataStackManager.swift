@@ -83,6 +83,7 @@ class CoreDataStackManager {
     func saveContext () {
         if managedObjectContext.hasChanges {
             do {
+                print("saving sharedContext")
                 try managedObjectContext.save()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.

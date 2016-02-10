@@ -8,8 +8,9 @@
 
 import UIKit
 import MapKit
+import CoreData
 
-class TravelLocationsVC: UIViewController, MKMapViewDelegate {
+class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
     // MARK: - Properties
     
@@ -19,32 +20,98 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         
-        // load all locations as annotations and add to the locationMap
+        // perform CoreData fetch
+        do {
+            try fetchedResultsController.performFetch()
+            print("fetched pins")
+        } catch {
+            print("Failed to perform fetch for Pins")
+        }
         
-        // recognise long press on the map
+        // set the delegate for fetchedResultsController
+        fetchedResultsController.delegate = self
+        
+        // declare annotations array for the map
+        var annotations = [MKPointAnnotation]()
+        
+        // load all locations as Pins from context
+        let locations = loadAllPins()
+        print(locations)
+        
+        // ... and and add them to the locationMap
+        for location in locations {
+            let lat = CLLocationDegrees(location.latitude) 
+            let long = CLLocationDegrees(location.longitude)
+            let coordinate = CLLocationCoordinate2DMake(lat, long)
+            
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            
+            annotations.append(annotation)
+        }
+        
+        // add annotations to the mapView
+        travelMap.addAnnotations(annotations)
+        
+        // add a gesture recogniser to the map for adding pins
         let longPress = UILongPressGestureRecognizer(target: self, action: "userPressedOnMap:")
         longPress.minimumPressDuration = 1.0
         travelMap.addGestureRecognizer(longPress)
     }
     
     
+    
     // MARK: - Actions
     
     func userPressedOnMap(gestureRecognizer: UIGestureRecognizer) {
-        if gestureRecognizer.state != .Began { return }
+        
         // TODO: implement drag gesture
+        if gestureRecognizer.state != .Began { return }
         print("user pressed on map for longer")
         
         let touchPoint = gestureRecognizer.locationInView(travelMap)
         let newCoord = travelMap.convertPoint(touchPoint, toCoordinateFromView: travelMap)
         
-        
         let newAnnotation = MKPointAnnotation()
         newAnnotation.coordinate = newCoord
+        
+        // add a new Pin object to the database
+        let pinToBeAdded = Pin(coordinates: newCoord, context: sharedContext)
 
+        // add the new annotation to the map
         travelMap.addAnnotation(newAnnotation)
+        
+        // save the change in the CoreData
+        saveContext()
+    }
+    
+    // MARK: - CoreData Helpers
+    
+    func loadAllPins() -> [Pin] {
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        do {
+            return try sharedContext.executeFetchRequest(fetchRequest) as! [Pin]
+        } catch _ {
+            return [Pin]()
+        }
+    }
+    
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        fetchRequest.sortDescriptors = []
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        return fetchedResultsController
+    }()
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStackManager.sharedInstance().managedObjectContext
+    }
+    
+    func saveContext() {
+        CoreDataStackManager.sharedInstance().saveContext()
     }
     
     // MARK: - MKMapViewDelegate
@@ -69,10 +136,10 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate {
         return pinView
     }
     
-    
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         //TODO: Segue if a pin is tapped
     }
+    
     
 
 }

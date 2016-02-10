@@ -7,25 +7,26 @@
 //
 
 import CoreData
+import MapKit
 
 class Pin: NSManagedObject {
     
-    @NSManaged var lat: NSNumber
-    @NSManaged var long: NSNumber
-    @NSManaged var pins: [Pin]
+    @NSManaged var latitude: NSNumber
+    @NSManaged var longitude: NSNumber
+    @NSManaged var pictures: [Picture]
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(latitude: Double, longitude: Double, context: NSManagedObjectContext) {
+    init(coordinates: CLLocationCoordinate2D, context: NSManagedObjectContext) {
         
         // Core Data
         let entity = NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         // Init Properties
-        lat = latitude
-        long = longitude
+        latitude = coordinates.latitude
+        longitude = coordinates.longitude
     }
 }
