@@ -31,6 +31,8 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
         let span = MKCoordinateSpanMake(0.5, 0.5)
         let region = MKCoordinateRegion(center: (pin?.coordinate)!, span: span)
         locationMap.setRegion(region, animated: true)
+
+
         
         
     }

@@ -57,6 +57,7 @@
 		FE135BD21C6B373E00BF8151 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				FECF84A11C6CE2CE003A6D1D /* FlickrClient */,
 				FEE807B91C6B6CA0009D4171 /* CoreDataStackManager.swift */,
 				FEE807B71C6B6C31009D4171 /* Pin.swift */,
 				FECF849D1C6B7558003A6D1D /* Picture.swift */,
@@ -109,6 +110,13 @@
 				FECF849F1C6CC814003A6D1D /* assets.xcassets */,
 			);
 			path = VirtualTourist;
+			sourceTree = "<group>";
+		};
+		FECF84A11C6CE2CE003A6D1D /* FlickrClient */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = FlickrClient;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

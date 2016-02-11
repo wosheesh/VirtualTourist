@@ -19,7 +19,6 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var bottomInfoLabel: UILabel!
 
-    
     // MARK: - Lifecycle
     
     override func viewWillAppear(animated: Bool) {
@@ -35,9 +34,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
 
-        
         // perform CoreData fetch
         do {
             try fetchedResultsController.performFetch()
@@ -45,8 +42,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         } catch {
             print("Failed to perform fetch for Pins")
         }
-        
-        
+
         // set the delegate for fetchedResultsController
         fetchedResultsController.delegate = self
         
@@ -64,6 +60,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     
     // MARK: - Actions
     
+    /// Adds a pin to the mapView and a Pin object to CoreData
     func userPressedOnMap(gestureRecognizer: UIGestureRecognizer) {
         
         // TODO: implement drag gesture
@@ -87,17 +84,15 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
   
     }
     
-    
+    /// Switches the top right button between Edit/Done and shows/hides
+    /// the bottom info label. Button title is used later in 
+    /// `mapView(_:didSelectAnnotationView:)` as the indicator
     @IBAction func editButtonTouchUp(sender: AnyObject) {
         if editButton.title == "Edit" {
-            
-            // change the button title
             editButton.title = "Done"
             
             // push the deleting info label
             hideBottomInfoLabel(false)
-
-            
         } else {
             editButton.title = "Edit"
             
@@ -106,9 +101,6 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         }
         
     }
-    
-    
-    
     
     // MARK: - CoreData Helpers
     
