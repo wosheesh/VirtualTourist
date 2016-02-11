@@ -162,16 +162,30 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
-        let controller = storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbum") as! PhotoAlbumVC
-        
-        // passing the selected pin to PhotoAlbumVC
-        controller.pin = view.annotation as! Pin
-        
-        // change the back button title in the next controller by changing current title
-        navigationItem.title = "OK"
-        
-        // using nav controller to push the PhotoAlbumVC
-        navigationController!.pushViewController(controller, animated: true)
+        if editButton.title == "Edit" {
+            // editing mode:
+            
+            let controller = storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbum") as! PhotoAlbumVC
+            
+            // passing the selected pin to PhotoAlbumVC
+            controller.pin = view.annotation as! Pin
+            
+            // change the back button title in the next controller by changing current title
+            navigationItem.title = "OK"
+            
+            navigationController!.pushViewController(controller, animated: true)
+            
+        } else if editButton.title == "Done" {
+            // deleting mode:
+            
+            let pinToDelete = view.annotation as! Pin
+            
+            sharedContext.deleteObject(pinToDelete)
+            travelMap.removeAnnotation(pinToDelete)
+            
+            saveContext()
+            
+        }
 
     }
     

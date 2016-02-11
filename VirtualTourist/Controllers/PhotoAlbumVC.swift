@@ -26,8 +26,12 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
         super.viewDidLoad()
 
         
-        // load the pin passed from TravelLocationsVC to the mapView
+        // load the pin passed from TravelLocationsVC to the mapView and center the view
         locationMap.addAnnotation(pin!)
+        let span = MKCoordinateSpanMake(0.5, 0.5)
+        let region = MKCoordinateRegion(center: (pin?.coordinate)!, span: span)
+        locationMap.setRegion(region, animated: true)
+        
         
     }
     
