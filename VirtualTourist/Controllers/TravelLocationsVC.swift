@@ -16,21 +16,28 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     
     @IBOutlet weak var travelMap: MKMapView!
     @IBOutlet weak var editButton: UIBarButtonItem!
+    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var bottomInfoLabel: UILabel!
+
     
     // MARK: - Lifecycle
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        // reset the title
         navigationItem.title = "Virtual Tourist"
         
-        
-        
+        // hide the info label
+        bottomInfoLabel.hidden = true
+
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
 
+        
         // perform CoreData fetch
         do {
             try fetchedResultsController.performFetch()
@@ -38,6 +45,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         } catch {
             print("Failed to perform fetch for Pins")
         }
+        
         
         // set the delegate for fetchedResultsController
         fetchedResultsController.delegate = self
@@ -78,6 +86,28 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         }
   
     }
+    
+    
+    @IBAction func editButtonTouchUp(sender: AnyObject) {
+        if editButton.title == "Edit" {
+            
+            // change the button title
+            editButton.title = "Done"
+            
+            // push the deleting info label
+            hideBottomInfoLabel(false)
+
+            
+        } else {
+            editButton.title = "Edit"
+            
+            // remove the deleting info label
+            hideBottomInfoLabel(true)
+        }
+        
+    }
+    
+    
     
     
     // MARK: - CoreData Helpers
@@ -143,6 +173,19 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         // using nav controller to push the PhotoAlbumVC
         navigationController!.pushViewController(controller, animated: true)
 
+    }
+    
+    // MARK: - Helpers
+    
+    /// switches the visibility of the text label on the
+    /// stackView informing user on tapping the pins to delete
+    func hideBottomInfoLabel(show: Bool) {
+        dispatch_async(dispatch_get_main_queue()) {
+            UIView.animateWithDuration(0.25) { () -> Void in
+                let label = self.stackView.arrangedSubviews[1]
+                label.hidden = show
+            }
+        }
     }
 
 

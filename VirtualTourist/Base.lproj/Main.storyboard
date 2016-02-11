@@ -34,27 +34,47 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="PP3-RZ-i0b">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="EOI-Dc-Oib">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
-                                <connections>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="F9F-Qn-gjl"/>
-                                </connections>
-                            </mapView>
+                                <subviews>
+                                    <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="PP3-RZ-i0b">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="466"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="F9F-Qn-gjl"/>
+                                        </connections>
+                                    </mapView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Tap Pins to Delete" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Tm-em-wq5">
+                                        <rect key="frame" x="0.0" y="466" width="600" height="70"/>
+                                        <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="70" id="kuz-CL-7rl"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="PP3-RZ-i0b" secondAttribute="trailing" constant="-20" id="IVi-Ls-NRN"/>
-                            <constraint firstItem="PP3-RZ-i0b" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="JGL-xB-IwZ"/>
-                            <constraint firstItem="PP3-RZ-i0b" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="Kwz-3A-hHQ"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="PP3-RZ-i0b" secondAttribute="bottom" id="Mvb-df-OHq"/>
-                            <constraint firstItem="PP3-RZ-i0b" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="QQq-CN-XKW"/>
+                            <constraint firstItem="EOI-Dc-Oib" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="ClJ-Qd-QEz"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="EOI-Dc-Oib" secondAttribute="trailing" constant="-20" id="Mfp-gu-1je"/>
+                            <constraint firstItem="EOI-Dc-Oib" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="UY9-Or-fy3"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="EOI-Dc-Oib" secondAttribute="bottom" id="aD3-aq-od4"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="sQb-Yn-lck">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="UW5-cd-1ud"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="UW5-cd-1ud">
+                            <connections>
+                                <action selector="editButtonTouchUp:" destination="BYZ-38-t0r" id="9Gg-vJ-5CZ"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="bottomInfoLabel" destination="4Tm-em-wq5" id="nmQ-Ka-og7"/>
                         <outlet property="editButton" destination="UW5-cd-1ud" id="qAe-oK-0KL"/>
+                        <outlet property="stackView" destination="EOI-Dc-Oib" id="v30-Or-cn1"/>
                         <outlet property="travelMap" destination="PP3-RZ-i0b" id="hEo-al-jXd"/>
                         <segue destination="8sQ-Az-gsM" kind="show" identifier="showPhotoAlbum" id="hjO-gN-LqN"/>
                     </connections>
