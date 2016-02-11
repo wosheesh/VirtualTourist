@@ -19,22 +19,30 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
     @IBOutlet weak var photoCollection: UICollectionView!
     @IBOutlet weak var bottomButton: UIButton!
     
-    var pin: MKAnnotation?
+    var pin: MKAnnotation!
     
     // MARK: - LifeCycle
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // TODO: pre-fetch the pictures after dropping the pin
+        
+        // load the array of pictures from the area around the pin
+        // add them to a the collection view
+        FlickrClient.sharedInstance().searchPhotosByCoords(pin.coordinate)
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
         // load the pin passed from TravelLocationsVC to the mapView and center the view
-        locationMap.addAnnotation(pin!)
+        locationMap.addAnnotation(pin)
         let span = MKCoordinateSpanMake(0.5, 0.5)
-        let region = MKCoordinateRegion(center: (pin?.coordinate)!, span: span)
+        let region = MKCoordinateRegion(center: pin.coordinate, span: span)
         locationMap.setRegion(region, animated: true)
 
-
-        
-        
     }
     
 }
