@@ -24,6 +24,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+
         
         // load the pin passed from TravelLocationsVC to the mapView
         locationMap.addAnnotation(pin!)

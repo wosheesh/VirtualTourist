@@ -11,7 +11,6 @@
 		FEB6A4C31C6B36350050E621 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB6A4C21C6B36350050E621 /* AppDelegate.swift */; };
 		FEB6A4C51C6B36350050E621 /* TravelLocationsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB6A4C41C6B36350050E621 /* TravelLocationsVC.swift */; };
 		FEB6A4C81C6B36350050E621 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEB6A4C61C6B36350050E621 /* Main.storyboard */; };
-		FEB6A4CD1C6B36350050E621 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FEB6A4CC1C6B36350050E621 /* Assets.xcassets */; };
 		FEB6A4D01C6B36350050E621 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEB6A4CE1C6B36350050E621 /* LaunchScreen.storyboard */; };
 		FECF849C1C6B7010003A6D1D /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FECF849A1C6B7010003A6D1D /* Model.xcdatamodeld */; };
 		FECF849E1C6B7558003A6D1D /* Picture.swift in Sources */ = {isa = PBXBuildFile; fileRef = FECF849D1C6B7558003A6D1D /* Picture.swift */; };
@@ -25,7 +24,6 @@
 		FEB6A4C21C6B36350050E621 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FEB6A4C41C6B36350050E621 /* TravelLocationsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TravelLocationsVC.swift; path = Controllers/TravelLocationsVC.swift; sourceTree = "<group>"; };
 		FEB6A4C71C6B36350050E621 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		FEB6A4CC1C6B36350050E621 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FEB6A4CF1C6B36350050E621 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FEB6A4D11C6B36350050E621 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FECF849B1C6B7010003A6D1D /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
@@ -105,7 +103,6 @@
 				FEB6A4C61C6B36350050E621 /* Main.storyboard */,
 				FEB6A4CE1C6B36350050E621 /* LaunchScreen.storyboard */,
 				FEB6A4D11C6B36350050E621 /* Info.plist */,
-				FEB6A4CC1C6B36350050E621 /* Assets.xcassets */,
 				FE135BD41C6B375A00BF8151 /* Helpers */,
 			);
 			path = VirtualTourist;
@@ -171,7 +168,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEB6A4D01C6B36350050E621 /* LaunchScreen.storyboard in Resources */,
-				FEB6A4CD1C6B36350050E621 /* Assets.xcassets in Resources */,
 				FEB6A4C81C6B36350050E621 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

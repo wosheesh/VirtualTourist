@@ -15,12 +15,22 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     // MARK: - Properties
     
     @IBOutlet weak var travelMap: MKMapView!
+    @IBOutlet weak var editButton: UIBarButtonItem!
     
     // MARK: - Lifecycle
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationItem.title = "Virtual Tourist"
+        
+        
+        
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // perform CoreData fetch
         do {
             try fetchedResultsController.performFetch()
@@ -68,6 +78,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         }
   
     }
+    
     
     // MARK: - CoreData Helpers
     
@@ -125,6 +136,9 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         
         // passing the selected pin to PhotoAlbumVC
         controller.pin = view.annotation as! Pin
+        
+        // change the back button title in the next controller by changing current title
+        navigationItem.title = "OK"
         
         // using nav controller to push the PhotoAlbumVC
         navigationController!.pushViewController(controller, animated: true)

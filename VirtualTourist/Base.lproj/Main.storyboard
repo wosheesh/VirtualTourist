@@ -50,8 +50,11 @@
                             <constraint firstItem="PP3-RZ-i0b" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="QQq-CN-XKW"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Virtual Tourist" id="sQb-Yn-lck"/>
+                    <navigationItem key="navigationItem" title="Virtual Tourist" id="sQb-Yn-lck">
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="UW5-cd-1ud"/>
+                    </navigationItem>
                     <connections>
+                        <outlet property="editButton" destination="UW5-cd-1ud" id="qAe-oK-0KL"/>
                         <outlet property="travelMap" destination="PP3-RZ-i0b" id="hEo-al-jXd"/>
                         <segue destination="8sQ-Az-gsM" kind="show" identifier="showPhotoAlbum" id="hjO-gN-LqN"/>
                     </connections>
@@ -122,7 +125,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="cwD-Og-Dnq">
-                        <barButtonItem key="backBarButtonItem" title="OK" id="VGM-3r-rzC"/>
+                        <barButtonItem key="backBarButtonItem" title="OK" id="3Lh-Tx-Z27"/>
                     </navigationItem>
                     <connections>
                         <outlet property="bottomButton" destination="x2O-gG-CaT" id="BP3-3x-au3"/>
