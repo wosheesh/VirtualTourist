@@ -6,16 +6,20 @@
 //  Copyright © 2016 Wojtek Materka. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import MapKit
 
 class FlickrClient: NSObject {
     
     // MARK: - Properties
+    var session = NSURLSession.sharedSession()
     
     // MARK: - Flickr API
     
-    func searchPhotosByCoords(coords: CLLocationCoordinate2D) {
+    /// Searches Flickr for pictures around "bbox" area
+    /// and returns an array of up to 30 random JSON-formatted photo objects.
+    /// If Flickr had no photos in the area returns an errorString.
+    func searchPhotosByCoords(coords: CLLocationCoordinate2D, completionHandler: (results: [[String : AnyObject]]?, errorString: String?) -> Void) {
         
         let methodArguments = [
             "method": Constants.METHOD_NAME,
@@ -24,23 +28,79 @@ class FlickrClient: NSObject {
             "safe_search": Constants.SAFE_SEARCH,
             "extras": Constants.EXTRAS,
             "format": Constants.DATA_FORMAT,
-            "nojsoncallback": Constants.NO_JSON_CALLBACK,
-            "page": 1
+            "nojsoncallback": Constants.NO_JSON_CALLBACK
         ]
         
+        // Make first request to get a random page, then another to get up to 30 images from the selected page
+        taskForFlickrRequest(methodArguments) { JSONResult, error in
+            
+             print(JSONResult)
+            
+            if let stat = JSONResult["stat"] as? String where stat == "ok",
+                let photosDictionary = JSONResult["photos"] as? NSDictionary,
+                let totalPages = photosDictionary["pages"] as? Int where totalPages > 0 {
+                
+                    // if there's only one page use the photos from this page
+                    if totalPages == 1 {
+                        let photosArray = photosDictionary["photo"] as? [[String: AnyObject]]
+                        
+                        print("found some photos after one search")
+                        
+                        completionHandler(results: photosArray, errorString: "found them")
+                        return
+                    }
+                   
+                    
+                    // if there's multuple pages pick a random page
+                    let pageLimit = min(totalPages, 40)
+                    let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+                    
+                    // and add it to the request parameters
+                    var withPageDictionary = methodArguments as [String : AnyObject]
+                    withPageDictionary["page"] = randomPage
+                    
+                    dispatch_async(dispatch_get_main_queue()) {
+                    
+                        self.taskForFlickrRequest(withPageDictionary) { (JSONResult, error) -> Void in
+                            
+                             print(JSONResult)
+                            
+                            if let stat = JSONResult["stat"] as? String where stat == "ok",
+                                let resultsDictionary = JSONResult["photos"] as? NSDictionary,
+                                let totalPhotosVal = (resultsDictionary["total"] as? NSString)?.integerValue where totalPhotosVal > 0 {
+                                    
+                                    let photosArray = resultsDictionary["photo"] as? [[String: AnyObject]]
+                                    
+                                    print("found some photos after multiple pages search")
+                                    
+                                    completionHandler(results: photosArray, errorString: "found them")
+                            }
+                        }
+                    }
+                    
+            } else {
+                completionHandler(results: nil, errorString: "No photos found here...")
+            }
+            
+        }
+    }
         
-        let session = NSURLSession.sharedSession()
-        let urlString = Constants.BASE_URL + escapedParameters(methodArguments as! [String:AnyObject])
+        
+    func taskForFlickrRequest(methodParameters: [String : AnyObject], completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+        
+        let urlString = Constants.BASE_URL + escapedParameters(methodParameters)
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
         
-        print(url)
+        print("Making a Flickr request: \(url)")
         
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
             /* GUARD: Was there an error? */
             guard (error == nil) else {
                 print("There was an error with your request: \(error)")
+                completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
                 return
             }
             
@@ -53,12 +113,16 @@ class FlickrClient: NSObject {
                 } else {
                     print("Your request returned an invalid response!")
                 }
+                completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
                 return
             }
             
             /* GUARD: Was there any data returned? */
             guard let data = data else {
                 print("No data was returned by the request!")
+                completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
                 return
             }
             
@@ -66,63 +130,44 @@ class FlickrClient: NSObject {
             let parsedResult: AnyObject!
             do {
                 parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+                completionHandler(result: parsedResult, error: nil)
             } catch {
                 parsedResult = nil
                 print("Could not parse the data as JSON: '\(data)'")
-                return
+                completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
+                    userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
             }
             
-            /* GUARD: Did Flickr return an error (stat != ok)? */
-            guard let stat = parsedResult["stat"] as? String where stat == "ok" else {
-                print("Flickr API returned an error. See error code and message in \(parsedResult)")
-                return
-            }
             
-            /* GUARD: Is the "photos" key in our result? */
-            guard let photosDictionary = parsedResult["photos"] as? NSDictionary else {
-                print("Cannot find key 'photos' in \(parsedResult)")
-                return
-            }
             
-            /* GUARD: Is the "total" key in photosDictionary? */
-            guard let totalPhotosVal = (photosDictionary["total"] as? NSString)?.integerValue else {
-                print("Cannot find key 'total' in \(photosDictionary)")
-                return
-            }
+//            /* GUARD: Did Flickr return an error? */
+//            guard let stat = parsedResult["stat"] as? String where stat == "ok" else {
+//                print("Flickr API returned an error. See error code and message in \(parsedResult)")
+//                completionHandler(result: parsedResult, error: NSError(domain: "taskForFlickrRequest", code: 0,
+//                    userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
+//            }
             
-            if totalPhotosVal > 0 {
-                
-                print(" totalPhotosVal: \(totalPhotosVal)")
-                print(photosDictionary)
-                /* GUARD: Is the "photo" key in photosDictionary? */
-                guard let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] else {
-                    print("Cannot find key 'photo' in \(photosDictionary)")
-                    return
-                }
-                
-                let randomPhotoIndex = Int(arc4random_uniform(UInt32(photosArray.count)))
-                print(randomPhotoIndex)
-                let photoDictionary = photosArray[randomPhotoIndex] as [String: AnyObject]
-                let photoTitle = photoDictionary["title"] as? String /* non-fatal */
-                
-                /* GUARD: Does our photo have a key for 'url_m'? */
-                guard let imageUrlString = photoDictionary["url_m"] as? String else {
-                    print("Cannot find key 'url_m' in \(photoDictionary)")
-                    return
-                }
-                
-                let imageURL = NSURL(string: imageUrlString)
-                if let imageData = NSData(contentsOfURL: imageURL!) {
-                    print("got an image")
-                } else {
-                    print("Image does not exist at \(imageURL)")
-                }
-            } else {
-                print("not found anything")
-            }
+            
+//            /* GUARD: Is "photos" key in our result? */
+//            guard let photosDictionary = parsedResult["photos"] as? NSDictionary else {
+//                print("Cannot find keys 'photos' in \(parsedResult)")
+//                return
+//            }
+//            
+//            /* GUARD: Is "pages" key in the photosDictionary? */
+//            guard let totalPages = photosDictionary["pages"] as? Int else {
+//                print("Cannot find key 'pages' in \(photosDictionary)")
+//                return
+//            }
+            
+//            /* Pick a random page! */
+//            let pageLimit = min(totalPages, 40)
+//            let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+//            self.getImageFromFlickrBySearchWithPage(methodArguments, pageNumber: randomPage)
         }
         
         task.resume()
+
         
     }
     

@@ -30,7 +30,11 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
         
         // load the array of pictures from the area around the pin
         // add them to a the collection view
-        FlickrClient.sharedInstance().searchPhotosByCoords(pin.coordinate)
+        FlickrClient.sharedInstance().searchPhotosByCoords(pin.coordinate) { results, errorString in
+            print("Results: \(results)")
+            print("errorString: \(errorString)")
+            
+        }
         
     }
     

@@ -19,8 +19,8 @@ extension FlickrClient {
         static let SAFE_SEARCH = "1"
         static let DATA_FORMAT = "json"
         static let NO_JSON_CALLBACK = "1"
-        static let BOUNDING_BOX_HALF_WIDTH = 1.0
-        static let BOUNDING_BOX_HALF_HEIGHT = 1.0
+        static let BOUNDING_BOX_HALF_WIDTH = 0.1
+        static let BOUNDING_BOX_HALF_HEIGHT = 0.1
     }
     
 }
