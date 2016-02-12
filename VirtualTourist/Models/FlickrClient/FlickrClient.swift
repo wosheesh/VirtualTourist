@@ -85,7 +85,7 @@ class FlickrClient: NSObject {
         }
     }
         
-        
+    /// Runs a Flickr API request based on methodParameters, returns results and/or NSError through completion handler
     func taskForFlickrRequest(methodParameters: [String : AnyObject], completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
         
         let urlString = Constants.BASE_URL + escapedParameters(methodParameters)
@@ -137,41 +137,15 @@ class FlickrClient: NSObject {
                 completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
                     userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
             }
-            
-            
-            
-//            /* GUARD: Did Flickr return an error? */
-//            guard let stat = parsedResult["stat"] as? String where stat == "ok" else {
-//                print("Flickr API returned an error. See error code and message in \(parsedResult)")
-//                completionHandler(result: parsedResult, error: NSError(domain: "taskForFlickrRequest", code: 0,
-//                    userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
-//            }
-            
-            
-//            /* GUARD: Is "photos" key in our result? */
-//            guard let photosDictionary = parsedResult["photos"] as? NSDictionary else {
-//                print("Cannot find keys 'photos' in \(parsedResult)")
-//                return
-//            }
-//            
-//            /* GUARD: Is "pages" key in the photosDictionary? */
-//            guard let totalPages = photosDictionary["pages"] as? Int else {
-//                print("Cannot find key 'pages' in \(photosDictionary)")
-//                return
-//            }
-            
-//            /* Pick a random page! */
-//            let pageLimit = min(totalPages, 40)
-//            let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
-//            self.getImageFromFlickrBySearchWithPage(methodArguments, pageNumber: randomPage)
         }
         
         task.resume()
-
-        
+  
     }
     
     // MARK: Coordinate manipulation
+    /// Used to create a bounding box for flickr geo query.
+    /// Returns a String that can be used in "bbox" API argument.
     func createBoundingBoxString(coords: CLLocationCoordinate2D) -> String {
         
         let latitude = coords.latitude
