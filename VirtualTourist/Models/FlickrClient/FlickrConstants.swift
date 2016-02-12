@@ -21,6 +21,11 @@ extension FlickrClient {
         static let NO_JSON_CALLBACK = "1"
         static let BOUNDING_BOX_HALF_WIDTH = 0.1
         static let BOUNDING_BOX_HALF_HEIGHT = 0.1
+        static let PICTURE_FETCH_LIMIT = 18
+    }
+    
+    struct JSONReturnKeys {
+        static let URLKey = "url_m"
     }
     
 }

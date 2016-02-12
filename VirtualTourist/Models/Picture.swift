@@ -27,8 +27,29 @@ class Picture: NSManagedObject {
         picturePath = path
     }
     
-    // MARK: - Helpers
+    // MARK: - Convenience
     
+    /// Make a picture object out of an array of Flickr JSON objects. Returns an array of Pictures.
+    static func picturesFromFlickrResults(pin: Pin, results: [[String: AnyObject]], context: NSManagedObjectContext) -> [Picture] {
+        var pictures = [Picture]()
+        
+        for result in results {
+            let pathInResult = result[FlickrClient.JSONReturnKeys.URLKey] as! String
+            let newPicture = Picture(path: pathInResult, context: context)
+            
+            // set the db relationship
+            newPicture.pin = pin
+            
+            pictures.append(newPicture)
+            
+        }
+        
+        return pictures
+    }
+    
+    
+    
+    // TODO: image function to return or delete UIImage from Documents / Cache
     override func prepareForDeletion() {
         //Delete associated image files from imagePath automatically
 //        if let fileName = imageFilePath?.lastPathComponent {
@@ -41,9 +62,9 @@ class Picture: NSManagedObject {
 //        }
     }
     
-    // TODO: image function to return or delete UIImage from Documents / Cache
     
     
-
+    
+    
     
 }
