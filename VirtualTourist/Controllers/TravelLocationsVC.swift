@@ -28,7 +28,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         navigationItem.title = "Virtual Tourist"
         
         // hide the info label
-        bottomInfoLabel.hidden = true
+//        bottomInfoLabel.hidden = true
 
     }
 

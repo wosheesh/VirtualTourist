@@ -17,7 +17,7 @@ class FlickrClient: NSObject {
     // MARK: - Flickr API
     
     /// Searches Flickr for pictures around "bbox" area
-    /// and returns an array of up to 30 random JSON-formatted photo objects.
+    /// and returns an array of up to Constants.PICTURE_FETCH_LIMIT JSON-formatted photo objects.
     /// If Flickr had no photos in the area returns an errorString.
     func searchPhotosByCoords(coords: CLLocationCoordinate2D, completionHandler: (results: [[String : AnyObject]]?, errorString: String?) -> Void) {
         
@@ -31,67 +31,64 @@ class FlickrClient: NSObject {
             "nojsoncallback": Constants.NO_JSON_CALLBACK
         ]
         
-        // Make first request to get a random page, then another to get up to 30 images from the selected page
+        // Make first request to get a random page, then another to get a smaller array of images from the selected page
         taskForFlickrRequest(methodArguments) { JSONResult, error in
             
             if let stat = JSONResult["stat"] as? String where stat == "ok",
                 let photosDictionary = JSONResult["photos"] as? NSDictionary,
                 let totalPages = photosDictionary["pages"] as? Int where totalPages > 0 {
                     
-                    print("found \(totalPages) on Flickr")
+                    print("found \(totalPages) pages on Flickr")
                 
                     // just get the first few pictures
-                    if totalPages == 1 {
-                        let photosArray = photosDictionary["photo"] as? [[String: AnyObject]]
+                    if totalPages == 1,
+                        let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
+                            print(JSONResult)
                         
-                        // just get the first 18 pictures
-                        let pictureLimit = min(photosArray!.count, Constants.PICTURE_FETCH_LIMIT)
-                        let firstPictures = Array(photosArray![1..<pictureLimit])
+                            print("found \(photosArray.count) photos on the 1st page")
                         
-                        print(firstPictures)
+                            // just get the first few pictures
+                            let pictureLimit = min(photosArray.count, Constants.PICTURE_FETCH_LIMIT)
+                            let firstPictures = Array(photosArray.prefix(pictureLimit))
+                            
+                            print("downloading \(pictureLimit) pictures")
+                            print(firstPictures)
                         
-                        completionHandler(results: firstPictures, errorString: nil)
+                            completionHandler(results: firstPictures, errorString: nil)
+                            return
                     }
-                   
                     
-                    // if there's multiple pages pick a random page
+                    // if there's multiple pages pick a random page and add it to the request parameters
                     let randomPage = Int(arc4random_uniform(UInt32(totalPages))) + 1
-                    
-                    // and add it to the request parameters
                     var withPageDictionary = methodArguments as [String : AnyObject]
                     withPageDictionary["page"] = randomPage
-                    
-                    print("Lookin for pictures from page: \(randomPage)")
-                    
+        
                     // look for photos from the selected page
-                    dispatch_async(dispatch_get_main_queue()) {
-                    
-                        self.taskForFlickrRequest(withPageDictionary) { (JSONResult, error) -> Void in
-                            
-//                             print(JSONResult)
-                            
-                            if let stat = JSONResult["stat"] as? String where stat == "ok",
-                                let resultsDictionary = JSONResult["photos"] as? NSDictionary,
-                                let totalPhotosVal = (resultsDictionary["total"] as? NSString)?.integerValue where totalPhotosVal > 0 {
-            
-                                    print("found some photos after multiple pages search")
-                                    let photosArray = resultsDictionary["photo"] as? [[String: AnyObject]]
-                                    
-                                    // just get the first few pictures
-                                    let pictureLimit = min(photosArray!.count, Constants.PICTURE_FETCH_LIMIT)
-                                    let firstPictures = Array(photosArray![1..<pictureLimit])
-                                    
-                                    print(firstPictures)
-                                    
-                                    completionHandler(results: firstPictures, errorString: nil)
-                            }
+                    self.taskForFlickrRequest(withPageDictionary) { (JSONResult, error) -> Void in
+                        print("Lookin for pictures from page: \(randomPage)")
+                        
+                        if let stat = JSONResult["stat"] as? String where stat == "ok",
+                            let resultsDictionary = JSONResult["photos"] as? NSDictionary,
+                            let totalPhotosVal = (resultsDictionary["total"] as? NSString)?.integerValue where totalPhotosVal > 0,
+                            let photosArray = resultsDictionary["photo"] as? [[String: AnyObject]] {
+        
+                                print("found \(photosArray.count) photos after multiple pages search")
+
+                                // just get the first few pictures
+                                let pictureLimit = min(photosArray.count, Constants.PICTURE_FETCH_LIMIT)
+                                let firstPictures = Array(photosArray.prefix(pictureLimit))
+                                
+                                print("downloading \(pictureLimit) pictures")
+                                print(firstPictures)
+                                
+                                completionHandler(results: firstPictures, errorString: nil)
                         }
                     }
                     
-            } else {
-                print("Didn't find anything there")
-                completionHandler(results: nil, errorString: "No photos found here...")
-            }
+                } else {
+                    print("Didn't find anything there")
+                    completionHandler(results: nil, errorString: "No photos found here...")
+                }
             
         }
     }
