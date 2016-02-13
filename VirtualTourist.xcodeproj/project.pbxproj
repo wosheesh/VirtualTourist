@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FE135BD61C6B3D1200BF8151 /* PhotoAlbumVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE135BD51C6B3D1200BF8151 /* PhotoAlbumVC.swift */; };
+		FE6A5A691C6F1926008BD751 /* PictureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE6A5A681C6F1926008BD751 /* PictureCell.swift */; };
 		FEB6A4C31C6B36350050E621 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB6A4C21C6B36350050E621 /* AppDelegate.swift */; };
 		FEB6A4C51C6B36350050E621 /* TravelLocationsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB6A4C41C6B36350050E621 /* TravelLocationsVC.swift */; };
 		FEB6A4C81C6B36350050E621 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEB6A4C61C6B36350050E621 /* Main.storyboard */; };
@@ -23,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		FE135BD51C6B3D1200BF8151 /* PhotoAlbumVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoAlbumVC.swift; path = Controllers/PhotoAlbumVC.swift; sourceTree = "<group>"; };
+		FE6A5A681C6F1926008BD751 /* PictureCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PictureCell.swift; path = Views/PictureCell.swift; sourceTree = "<group>"; };
 		FEB6A4BF1C6B36350050E621 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEB6A4C21C6B36350050E621 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FEB6A4C41C6B36350050E621 /* TravelLocationsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TravelLocationsVC.swift; path = Controllers/TravelLocationsVC.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 		FE135BD31C6B375300BF8151 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FE6A5A681C6F1926008BD751 /* PictureCell.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 			files = (
 				FEE807B81C6B6C31009D4171 /* Pin.swift in Sources */,
 				FECF84A51C6CE73A003A6D1D /* FlickrConstants.swift in Sources */,
+				FE6A5A691C6F1926008BD751 /* PictureCell.swift in Sources */,
 				FEB6A4C51C6B36350050E621 /* TravelLocationsVC.swift in Sources */,
 				FE135BD61C6B3D1200BF8151 /* PhotoAlbumVC.swift in Sources */,
 				FEB6A4C31C6B36350050E621 /* AppDelegate.swift in Sources */,

@@ -16,9 +16,8 @@ class FlickrClient: NSObject {
     
     // MARK: - Flickr API
     
-    /// Searches Flickr for pictures around "bbox" area
-    /// and returns an array of up to Constants.PICTURE_FETCH_LIMIT JSON-formatted photo objects.
-    /// If Flickr had no photos in the area returns an errorString.
+    /// Searches Flickr for pictures around "bbox" area and returns an array of up to PICTURE_FETCH_LIMIT
+    /// JSON-formatted photo objects. If Flickr had no photos in the area returns an errorString.
     func searchPhotosByCoords(coords: CLLocationCoordinate2D, completionHandler: (results: [[String : AnyObject]]?, errorString: String?) -> Void) {
         
         let methodArguments = [

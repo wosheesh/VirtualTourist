@@ -15,6 +15,11 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
     
     // MARK: - Properties
     
+    // for communicating between CoreData and CollectionView
+    var insertedIndexPaths: [NSIndexPath]!
+    var deletedIndexPaths: [NSIndexPath]!
+    var updatedIndexPaths: [NSIndexPath]!
+    
     @IBOutlet weak var locationMap: MKMapView!
     @IBOutlet weak var photoCollection: UICollectionView!
     @IBOutlet weak var bottomButton: UIButton!
@@ -107,8 +112,33 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
 
 // TODO: Add UICollectionViewDataSource delegate in storyboard
 
-extension PhotoAlbumVC: UICollectionViewDelegate {
+extension PhotoAlbumVC: UICollectionViewDelegate, UICollectionViewDataSource {
     
+    func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
+        let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
+        
+        cell.imagePathString = pic.picturePath
+        
+    }
+    
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return self.fetchedResultsController.sections?.count ?? 0
+    }
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let sectionInfo = self.fetchedResultsController.sections![section]
+        
+        print("number of pictureCells: \(sectionInfo.numberOfObjects)")
+        return sectionInfo.numberOfObjects
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PictureCell", forIndexPath: indexPath) as! PictureCell
+        
+        self.configureCell(cell, atIndexPath: indexPath)
+        
+        return cell
+    }
    
     
 }
