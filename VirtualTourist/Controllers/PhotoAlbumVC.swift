@@ -11,11 +11,14 @@ import MapKit
 import CoreData
 
 
-class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
+class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     
     // MARK: - Properties
     
-    // for communicating between CoreData and CollectionView
+    // used to keep track of selected picture cells - for UI updates and deletions.
+    var selectedIndexes = [NSIndexPath]()
+    
+    // for communicating changes between CoreData and CollectionView
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     var updatedIndexPaths: [NSIndexPath]!
@@ -86,7 +89,6 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
 
     }
     
-    
     // MARK: - Core Data
     
     lazy var fetchedResultsController: NSFetchedResultsController = {
@@ -106,18 +108,19 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate {
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-}
-
-// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
-
-// TODO: Add UICollectionViewDataSource delegate in storyboard
-
-extension PhotoAlbumVC: UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
     
     func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
         
         cell.imagePathString = pic.picturePath
+        
+        if let index = selectedIndexes.indexOf(indexPath) {
+            cell.picPlaceholderLabel.alpha = 0.5
+        } else {
+            cell.picPlaceholderLabel.alpha = 1.0
+        }
         
     }
     
@@ -139,6 +142,65 @@ extension PhotoAlbumVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
         return cell
     }
-   
+    
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PictureCell
+        
+        // toggle the cell presences in the helper index
+        if let index = selectedIndexes.indexOf(indexPath) {
+            selectedIndexes.removeAtIndex(index)
+        } else {
+            selectedIndexes.append(indexPath)
+        }
+        
+        configureCell(cell, atIndexPath: indexPath)
+    }
+
+    // MARK: - Fetched Results Controller Delegate
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        insertedIndexPaths = [NSIndexPath]()
+        deletedIndexPaths = [NSIndexPath]()
+        updatedIndexPaths = [NSIndexPath]()
+        
+        print("in controllerWillChangeContent")
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:
+            insertedIndexPaths.append(newIndexPath!)
+        case .Delete:
+            deletedIndexPaths.append(indexPath!)
+        case .Update:
+            updatedIndexPaths.append(indexPath!)
+        case .Move:
+            print("move an item - not expected")
+        default:
+            break
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        print(" in controllerDidChangeContent. inserted: \(insertedIndexPaths.count) deleted: \(deletedIndexPaths)")
+        
+        photoCollection.performBatchUpdates({ () -> Void in
+            for indexPath in self.insertedIndexPaths {
+                self.photoCollection.insertItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.deletedIndexPaths {
+                self.photoCollection.deleteItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.updatedIndexPaths {
+                self.photoCollection.reloadItemsAtIndexPaths([indexPath])
+                
+            }
+            }, completion: nil)
+    }
     
 }
+
+   
+    
