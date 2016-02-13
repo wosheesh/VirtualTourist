@@ -25,8 +25,8 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     
     @IBOutlet weak var locationMap: MKMapView!
     @IBOutlet weak var photoCollection: UICollectionView!
-    @IBOutlet weak var bottomButton: UIButton!
     @IBOutlet weak var collectionLabel: UILabel!
+    @IBOutlet weak var bottomButton: UIBarButtonItem!
     
     var pin: Pin!
     
@@ -51,6 +51,8 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             print("failed to perform fetch on \(__FUNCTION__), error: \(error)")
         }
         
+        updateBottomButton()
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -71,25 +73,70 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
                         self.collectionLabel.text = errorString
                     })
                 } else {
-                    print("creating Picture objects")
-                    let picturesFound = Picture.picturesFromFlickrResults(self.pin, results: results!, context: self.sharedContext)
-                    print("saving Picture objects :")
-                    self.saveContext()
-                    print(picturesFound)
-
                     
+                    let picturesFound = Picture.picturesFromFlickrResults(self.pin, results: results!, context: self.sharedContext)
+                    
+                    print("💾 creating \(picturesFound.count)Picture objects")
+                    self.saveContext()
+ 
                 }
 
             }
         } else {
-            print("this pin already had some data -->")
-            print("Pin pictures: \(pin.pictures)")
+            print("this pin already had some data --> 🖼")
         }
         
 
     }
     
-    // MARK: - Core Data
+    // MARK: - 💥 Actions
+
+    @IBAction func bottomButtonClicked(sender: AnyObject) {
+        if selectedIndexes.isEmpty {
+            deleteAllPictures()
+        } else {
+            deleteSelectedPictures()
+        }
+    }
+    
+    func deleteAllPictures() {
+        for picture in fetchedResultsController.fetchedObjects as! [Picture] {
+            sharedContext.deleteObject(picture)
+        }
+        
+        saveContext()
+        
+        print("🔥 Deleted all pictures in current collection")
+    }
+    
+    func deleteSelectedPictures() {
+        var picturesToDelete = [Picture]()
+        
+        for indexPath in selectedIndexes {
+            picturesToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Picture)
+        }
+        
+        for picture in picturesToDelete {
+            sharedContext.deleteObject(picture)
+        }
+        
+        saveContext()
+        
+        selectedIndexes = [NSIndexPath]()
+        print("⚡️ removed selected pictures")
+    }
+    
+    func updateBottomButton() {
+        if selectedIndexes.count > 0 {
+            bottomButton.title = "Remove Photos"
+        } else {
+            bottomButton.title = "New Collection"
+        }
+    }
+
+    
+    
+    // MARK: - 💾 Core Data
     
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Picture")
@@ -97,6 +144,8 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin)
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
         return fetchedResultsController
     }()
     
@@ -153,7 +202,11 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             selectedIndexes.append(indexPath)
         }
         
+        // change the appearance of the cell
         configureCell(cell, atIndexPath: indexPath)
+        
+        // change the bottom button text
+        updateBottomButton()
     }
 
     // MARK: - Fetched Results Controller Delegate
@@ -182,7 +235,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        print(" in controllerDidChangeContent. inserted: \(insertedIndexPaths.count) deleted: \(deletedIndexPaths)")
+        print("ControllerDidChangeContent inserted: \(insertedIndexPaths.count) deleted: \(deletedIndexPaths.count)")
         
         photoCollection.performBatchUpdates({ () -> Void in
             for indexPath in self.insertedIndexPaths {

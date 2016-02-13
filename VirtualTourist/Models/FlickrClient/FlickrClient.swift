@@ -49,11 +49,9 @@ class FlickrClient: NSObject {
                             // just get the first few pictures
                             let pictureLimit = min(photosArray.count, Constants.PICTURE_FETCH_LIMIT)
                             let firstPictures = Array(photosArray.prefix(pictureLimit))
-                            
-                            print("downloading \(pictureLimit) pictures")
-                            print(firstPictures)
                         
                             completionHandler(results: firstPictures, errorString: nil)
+                            print("🖼 downloaded \(firstPictures.count) pictures")
                             return
                     }
                     
@@ -77,10 +75,8 @@ class FlickrClient: NSObject {
                                 let pictureLimit = min(photosArray.count, Constants.PICTURE_FETCH_LIMIT)
                                 let firstPictures = Array(photosArray.prefix(pictureLimit))
                                 
-                                print("downloading \(pictureLimit) pictures")
-                                print(firstPictures)
-                                
                                 completionHandler(results: firstPictures, errorString: nil)
+                                print("🖼 downloaded \(firstPictures.count) pictures")
                         }
                     }
                     
@@ -99,13 +95,13 @@ class FlickrClient: NSObject {
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
         
-        print("Making a Flickr request: \(url)")
+        print("☎️ Making a Flickr request: \(url)")
         
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
             /* GUARD: Was there an error? */
             guard (error == nil) else {
-                print("There was an error with your request: \(error)")
+                print("🆘 There was an error with your request: \(error)")
                 completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
                     userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
                 return
@@ -114,11 +110,11 @@ class FlickrClient: NSObject {
             /* GUARD: Did we get a successful 2XX response? */
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
                 if let response = response as? NSHTTPURLResponse {
-                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                    print("🆘 Your request returned an invalid response! Status code: \(response.statusCode)!")
                 } else if let response = response {
-                    print("Your request returned an invalid response! Response: \(response)!")
+                    print("🆘 Your request returned an invalid response! Response: \(response)!")
                 } else {
-                    print("Your request returned an invalid response!")
+                    print("🆘 Your request returned an invalid response!")
                 }
                 completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
                     userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
@@ -127,7 +123,7 @@ class FlickrClient: NSObject {
             
             /* GUARD: Was there any data returned? */
             guard let data = data else {
-                print("No data was returned by the request!")
+                print("🆘 No data was returned by the request!")
                 completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
                     userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
                 return
@@ -140,7 +136,7 @@ class FlickrClient: NSObject {
                 completionHandler(result: parsedResult, error: nil)
             } catch {
                 parsedResult = nil
-                print("Could not parse the data as JSON: '\(data)'")
+                print("🆘 Could not parse the data as JSON: '\(data)'")
                 completionHandler(result: nil, error: NSError(domain: "taskForFlickrRequest", code: 0,
                     userInfo: [NSLocalizedDescriptionKey : "There was an error while requesting data from Flickr"]))
             }

@@ -38,9 +38,9 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         // perform CoreData fetch
         do {
             try fetchedResultsController.performFetch()
-            print("fetched pins")
+            print("📍fetched \(fetchedResultsController.fetchedObjects?.count) pins ")
         } catch {
-            print("Failed to perform fetch for Pins")
+            print("🆘📍Failed to perform fetch for Pins")
         }
 
         // set the delegate for fetchedResultsController
