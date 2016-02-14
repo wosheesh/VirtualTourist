@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FE135BD61C6B3D1200BF8151 /* PhotoAlbumVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE135BD51C6B3D1200BF8151 /* PhotoAlbumVC.swift */; };
 		FE6A5A691C6F1926008BD751 /* PictureCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE6A5A681C6F1926008BD751 /* PictureCell.swift */; };
+		FE9FAB1D1C6FC4FC00521650 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9FAB1C1C6FC4FC00521650 /* Search.swift */; };
 		FEB6A4C31C6B36350050E621 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB6A4C21C6B36350050E621 /* AppDelegate.swift */; };
 		FEB6A4C51C6B36350050E621 /* TravelLocationsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB6A4C41C6B36350050E621 /* TravelLocationsVC.swift */; };
 		FEB6A4C81C6B36350050E621 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEB6A4C61C6B36350050E621 /* Main.storyboard */; };
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		FE135BD51C6B3D1200BF8151 /* PhotoAlbumVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PhotoAlbumVC.swift; path = Controllers/PhotoAlbumVC.swift; sourceTree = "<group>"; };
 		FE6A5A681C6F1926008BD751 /* PictureCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PictureCell.swift; path = Views/PictureCell.swift; sourceTree = "<group>"; };
+		FE9FAB1C1C6FC4FC00521650 /* Search.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Search.swift; path = Helpers/Search.swift; sourceTree = "<group>"; };
 		FEB6A4BF1C6B36350050E621 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEB6A4C21C6B36350050E621 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FEB6A4C41C6B36350050E621 /* TravelLocationsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = TravelLocationsVC.swift; path = Controllers/TravelLocationsVC.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 		FE135BD41C6B375A00BF8151 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				FE9FAB1C1C6FC4FC00521650 /* Search.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				FEE807BA1C6B6CA0009D4171 /* CoreDataStackManager.swift in Sources */,
 				FECF849C1C6B7010003A6D1D /* Model.xcdatamodeld in Sources */,
 				FECF84A31C6CE6CA003A6D1D /* FlickrClient.swift in Sources */,
+				FE9FAB1D1C6FC4FC00521650 /* Search.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

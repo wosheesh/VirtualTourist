@@ -28,4 +28,8 @@ extension FlickrClient {
         static let URLKey = "url_m"
     }
     
+    struct Errors {
+        static let NoPictureError = "No Picture Found"
+    }
+    
 }

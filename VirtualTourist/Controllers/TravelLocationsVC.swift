@@ -18,6 +18,8 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     @IBOutlet weak var editButton: UIBarButtonItem!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var bottomInfoLabel: UILabel!
+    
+    let searchFlickr = Search()
 
     // MARK: - Lifecycle
     
@@ -38,7 +40,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         // perform CoreData fetch
         do {
             try fetchedResultsController.performFetch()
-            print("📍fetched \(fetchedResultsController.fetchedObjects?.count) pins ")
+            print("📍fetched \(fetchedResultsController.fetchedObjects!.count) pins ")
         } catch {
             print("🆘📍Failed to perform fetch for Pins")
         }
@@ -80,8 +82,11 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             
             // save the change in the CoreData
             saveContext()
+        
+            // search Flickr and update the data
+            Search().Flickr(newPin, context: sharedContext)
+            
         }
-  
     }
     
     /// Switches the top right button between Edit/Done and shows/hides
@@ -144,6 +149,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             pinView!.animatesDrop = true
             pinView!.pinTintColor = UIColor(red: 0.984, green: 0.227, blue: 0.184, alpha: 1.00)
             pinView!.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
+            
         }
         else {
             pinView!.annotation = annotation
@@ -154,18 +160,26 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         
+        print("📍 tapped")
+        
+        // TODO: mapView not responding to taps after data update in PhotoAlbumVC
+        
         if editButton.title == "Edit" {
             // editing mode:
             
+            // pass the selected pin to PhotoAlbumVC
             let controller = storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbum") as! PhotoAlbumVC
             
-            // passing the selected pin to PhotoAlbumVC
+            
             controller.pin = view.annotation as! Pin
             
             // change the back button title in the next controller by changing current title
             navigationItem.title = "OK"
             
             navigationController!.pushViewController(controller, animated: true)
+            
+            // making sure the pin is deselected so it can be tapped again consecutively
+            travelMap.deselectAnnotation(view.annotation, animated: true)
             
         } else if editButton.title == "Done" {
             // deleting mode:

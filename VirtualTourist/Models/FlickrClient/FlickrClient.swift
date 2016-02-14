@@ -35,14 +35,19 @@ class FlickrClient: NSObject {
             
             if let stat = JSONResult["stat"] as? String where stat == "ok",
                 let photosDictionary = JSONResult["photos"] as? NSDictionary,
-                let totalPages = photosDictionary["pages"] as? Int where totalPages > 0 {
+                let totalPages = photosDictionary["pages"] as? Int {
                     
                     print("found \(totalPages) pages on Flickr")
+                    
+                    // handle the situation where no pictures found
+                    if totalPages == 0 {
+                        completionHandler(results: nil, errorString: "No pictures found")
+                        return
+                    }
                 
-                    // just get the first few pictures
+                    // if there's just one page, pass some pictures from it
                     if totalPages == 1,
                         let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
-                            print(JSONResult)
                         
                             print("found \(photosArray.count) photos on the 1st page")
                         
@@ -60,7 +65,6 @@ class FlickrClient: NSObject {
                     var withPageDictionary = methodArguments as [String : AnyObject]
                     withPageDictionary["page"] = randomPage
         
-                    // look for photos from the selected page
                     self.taskForFlickrRequest(withPageDictionary) { (JSONResult, error) -> Void in
                         print("Lookin for pictures from page: \(randomPage)")
                         
@@ -81,8 +85,8 @@ class FlickrClient: NSObject {
                     }
                     
                 } else {
-                    print("Didn't find anything there")
-                    completionHandler(results: nil, errorString: "No photos found here...")
+                    print("🆘 Error completing Flickr search")
+                    completionHandler(results: nil, errorString: "Error completing Flickr search")
                 }
             
         }

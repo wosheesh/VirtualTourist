@@ -30,7 +30,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     
     var pin: Pin!
     
-    // MARK: - LifeCycle
+    // MARK: - 🔄 LifeCycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,54 +38,33 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         // some UI setup
         collectionLabel.hidden = true
         
+        // subscribe to search notifications
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "flickrSearchDidStart", name: notificationForSearchStart, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "flickrSearchDidEnd", name: notificationForSearchEnd, object: nil)
+        
+        // perform the fetch from CoreData
+        print("💾 starting fetch in PhotoAlbum")
+        do {
+            try fetchedResultsController.performFetch()
+            print("💾 performed PhotoAlbum fetch")
+        } catch let error as NSError {
+            print("🆘 💾failed to perform fetch on \(__FUNCTION__), error: \(error)")
+        }
+        
         // load the pin passed from TravelLocationsVC to the mapView and center the view
         locationMap.addAnnotation(pin)
         let span = MKCoordinateSpanMake(0.5, 0.5)
         let region = MKCoordinateRegion(center: pin.coordinate, span: span)
         locationMap.setRegion(region, animated: true)
         
-        // perform the fetch from CoreData
-        do {
-            try fetchedResultsController.performFetch()
-        } catch let error as NSError {
-            print("failed to perform fetch on \(__FUNCTION__), error: \(error)")
-        }
-        
+
+
         updateBottomButton()
         
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // TODO: pre-fetch the pictures after dropping the pin
-        
-        // load the array of pictures from the area around the pin
-        // add them to a the collection view
-        
-        if pin.pictures.isEmpty {
-            
-            FlickrClient.sharedInstance().searchPhotosByCoords(pin.coordinate) { results, errorString in
-                if let errorString = errorString {
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        self.photoCollection.hidden = true
-                        self.collectionLabel.hidden = false
-                        self.collectionLabel.text = errorString
-                    })
-                } else {
-                    
-                    let picturesFound = Picture.picturesFromFlickrResults(self.pin, results: results!, context: self.sharedContext)
-                    
-                    print("💾 creating \(picturesFound.count)Picture objects")
-                    self.saveContext()
- 
-                }
-
-            }
-        } else {
-            print("this pin already had some data --> 🖼")
-        }
-        
 
     }
     
@@ -94,6 +73,14 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     @IBAction func bottomButtonClicked(sender: AnyObject) {
         if selectedIndexes.isEmpty {
             deleteAllPictures()
+            
+            // search Flickr
+            
+            Search().Flickr(pin, context: sharedContext)
+            // TODO: Update collection view after data reloaded
+            
+            self.collectionLabel.text = "Looking for photos..."
+            
         } else {
             deleteSelectedPictures()
         }
@@ -133,8 +120,16 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             bottomButton.title = "New Collection"
         }
     }
-
     
+    // MARK: - 📬 Notification handling
+
+    func flickrSearchDidStart() {
+        print("📬 flickrSearchDidStart")
+    }
+    
+    func flickrSearchDidEnd() {
+        print("📬 flickrSearchDidEnd")
+    }
     
     // MARK: - 💾 Core Data
     
@@ -145,7 +140,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
         fetchedResultsController.delegate = self
-        
+        print("💾 instantiated fetchedREsultsController in PhotoAlbum")
         return fetchedResultsController
     }()
     
@@ -158,7 +153,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     }
     
     
-    // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
+    // MARK: -  UICollectionViewDelegate, UICollectionViewDataSource
     
     func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
@@ -179,8 +174,25 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
+        let numberOfCells = sectionInfo.numberOfObjects
+        print("number of pictureCells: \(numberOfCells)")
         
-        print("number of pictureCells: \(sectionInfo.numberOfObjects)")
+        // Hide the collection if there are no photos and display info
+        if numberOfCells == 0 {
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.photoCollection.hidden = true
+                self.collectionLabel.hidden = false
+                self.collectionLabel.text = "No Photos found..."
+                self.updateBottomButton()
+            })
+        } else if numberOfCells > 0 {
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.photoCollection.hidden = false
+                self.collectionLabel.hidden = true
+                self.updateBottomButton()
+            })
+        }
+        
         return sectionInfo.numberOfObjects
     }
     
@@ -209,14 +221,16 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         updateBottomButton()
     }
 
-    // MARK: - Fetched Results Controller Delegate
+    // MARK: - 🐕 Fetched Results Controller Delegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        print(" 🐕 in controllerWillChangeContent")
+        
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
         updatedIndexPaths = [NSIndexPath]()
         
-        print("in controllerWillChangeContent")
+
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
@@ -229,13 +243,11 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             updatedIndexPaths.append(indexPath!)
         case .Move:
             print("move an item - not expected")
-        default:
-            break
         }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        print("ControllerDidChangeContent inserted: \(insertedIndexPaths.count) deleted: \(deletedIndexPaths.count)")
+        print(" 🐕 ControllerDidChangeContent inserted: \(insertedIndexPaths.count) deleted: \(deletedIndexPaths.count)")
         
         photoCollection.performBatchUpdates({ () -> Void in
             for indexPath in self.insertedIndexPaths {
@@ -251,7 +263,9 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
                 
             }
             }, completion: nil)
+        
     }
+    
     
 }
 
