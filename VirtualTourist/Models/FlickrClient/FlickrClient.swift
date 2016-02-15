@@ -99,7 +99,7 @@ class FlickrClient: NSObject {
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
         
-        print("☎️ Making a Flickr request: \(url)")
+        print("☎️ Making a Flickr request...")
         
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             

@@ -125,10 +125,22 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
 
     func flickrSearchDidStart() {
         print("📬 flickrSearchDidStart")
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.photoCollection.hidden = true
+            self.collectionLabel.hidden = false
+            self.collectionLabel.text = "Looking for photos..."
+            self.bottomButton.enabled = false
+        })
+        
+        
     }
     
     func flickrSearchDidEnd() {
         print("📬 flickrSearchDidEnd")
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.bottomButton.enabled = true
+        })
+        
     }
     
     // MARK: - 💾 Core Data
@@ -160,7 +172,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         
         cell.imagePathString = pic.picturePath
         
-        if let index = selectedIndexes.indexOf(indexPath) {
+        if let _ = selectedIndexes.indexOf(indexPath) {
             cell.picPlaceholderLabel.alpha = 0.5
         } else {
             cell.picPlaceholderLabel.alpha = 1.0
@@ -175,25 +187,24 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
         let numberOfCells = sectionInfo.numberOfObjects
-        print("number of pictureCells: \(numberOfCells)")
         
-        // Hide the collection if there are no photos and display info
         if numberOfCells == 0 {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.photoCollection.hidden = true
                 self.collectionLabel.hidden = false
-                self.collectionLabel.text = "No Photos found..."
+                self.collectionLabel.text = "No Photos found at this location"
                 self.updateBottomButton()
             })
-        } else if numberOfCells > 0 {
+        } else {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.photoCollection.hidden = false
                 self.collectionLabel.hidden = true
                 self.updateBottomButton()
             })
         }
-        
-        return sectionInfo.numberOfObjects
+
+        print("number of pictureCells: \(numberOfCells)")
+        return numberOfCells
     }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
