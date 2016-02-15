@@ -14,6 +14,11 @@ class FlickrClient: NSObject {
     // MARK: - Properties
     var session = NSURLSession.sharedSession()
     
+    // cache
+    struct Caches {
+        static let pictureCache = PictureCache()
+    }
+    
     // MARK: - Flickr API
     
     /// Searches Flickr for pictures around "bbox" area and returns an array of up to PICTURE_FETCH_LIMIT

@@ -80,11 +80,13 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             // add the new annotation to the map
             travelMap.addAnnotation(newPin)
             
-            // save the change in the CoreData
-            saveContext()
+            print("main context : \(sharedContext)")
         
             // search Flickr and update the data
             Search().Flickr(newPin, context: sharedContext)
+            
+            // save the change in the CoreData
+            saveContext()
             
         }
     }
@@ -188,7 +190,8 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             sharedContext.deleteObject(pinToDelete)
             travelMap.removeAnnotation(pinToDelete)
             
-            saveContext()
+            // TODO: deleting without conflict
+             saveContext()
             
         }
 

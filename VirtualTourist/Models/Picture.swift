@@ -7,6 +7,7 @@
 //
 
 import CoreData
+import UIKit
 
 class Picture: NSManagedObject {
     
@@ -15,8 +16,6 @@ class Picture: NSManagedObject {
     @NSManaged var picturePath: String
     @NSManaged var flickrPath: String
     @NSManaged var pin: Pin?
-    
-    let documentsDirectory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -30,10 +29,11 @@ class Picture: NSManagedObject {
         let entity = NSEntityDescription.entityForName("Picture", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
-        // Init Properties
+        // store the path to the picture of Flickr
         flickrPath = path
-        picturePath = pictureFileURL(path)
         
+        // and use its filename as the local identifier
+        picturePath = NSURL(string: path)!.lastPathComponent!
     }
     
     // MARK: - Convenience
@@ -45,7 +45,8 @@ class Picture: NSManagedObject {
         for result in results {
             let pathInResult = result[FlickrClient.JSONReturnKeys.URLKey] as! String
             let newPicture = Picture(path: pathInResult, context: context)
-            
+            print(" 🖼 creating a new Pic: \(newPicture)")
+            print(" in context: \(context)")
             // set the db relationship
             newPicture.pin = pin
             
@@ -56,9 +57,14 @@ class Picture: NSManagedObject {
         return pictures
     }
     
-    func pictureFileURL(pathFromFlickr: String!) -> String {
-        return (NSURL(string: pathFromFlickr)?.lastPathComponent)!
+    var pictureFile: UIImage? {
+        get {
+            return FlickrClient.Caches.pictureCache.pictureWithIdentifier(picturePath)
+        }
         
+        set {
+            return FlickrClient.Caches.pictureCache.storePicture(newValue, withIdentifier: picturePath)
+        }
     }
     
     
