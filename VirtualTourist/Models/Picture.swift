@@ -10,12 +10,19 @@ import CoreData
 
 class Picture: NSManagedObject {
     
+    // MARK: - Properties
+    
     @NSManaged var picturePath: String
+    @NSManaged var flickrPath: String
     @NSManaged var pin: Pin?
+    
+    let documentsDirectory = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
+    
+    // MARK: - Init
     
     init(path: String, context: NSManagedObjectContext) {
         
@@ -24,7 +31,9 @@ class Picture: NSManagedObject {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         // Init Properties
-        picturePath = path
+        flickrPath = path
+        picturePath = pictureFileURL(path)
+        
     }
     
     // MARK: - Convenience
@@ -46,6 +55,12 @@ class Picture: NSManagedObject {
         
         return pictures
     }
+    
+    func pictureFileURL(pathFromFlickr: String!) -> String {
+        return (NSURL(string: pathFromFlickr)?.lastPathComponent)!
+        
+    }
+    
     
     
     

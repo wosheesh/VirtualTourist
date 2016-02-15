@@ -170,7 +170,6 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             // pass the selected pin to PhotoAlbumVC
             let controller = storyboard!.instantiateViewControllerWithIdentifier("PhotoAlbum") as! PhotoAlbumVC
             
-            
             controller.pin = view.annotation as! Pin
             
             // change the back button title in the next controller by changing current title
