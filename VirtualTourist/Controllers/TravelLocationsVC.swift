@@ -79,11 +79,9 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             
             // add the new annotation to the map
             travelMap.addAnnotation(newPin)
-            
-            print("main context : \(sharedContext)")
         
             // search Flickr and update the data
-            Search().Flickr(newPin, context: sharedContext)
+            Search().searchForPicturesWithPin(newPin, context: sharedContext)
             
             // save the change in the CoreData
             saveContext()
@@ -164,8 +162,6 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         
         print("📍 tapped")
         
-        // TODO: mapView not responding to taps after data update in PhotoAlbumVC
-        
         if editButton.title == "Edit" {
             // editing mode:
             
@@ -190,8 +186,8 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             sharedContext.deleteObject(pinToDelete)
             travelMap.removeAnnotation(pinToDelete)
             
-            // TODO: deleting without conflict
-             saveContext()
+      
+            saveContext()
             
         }
 

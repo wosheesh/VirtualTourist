@@ -76,7 +76,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             
             // search Flickr
             
-            Search().Flickr(pin, context: sharedContext)
+            Search().searchForPicturesWithPin(pin, context: sharedContext)
             // TODO: Update collection view after data reloaded
             
             self.collectionLabel.text = "Looking for photos..."
@@ -170,7 +170,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
         
-        cell.imagePathString = pic.picturePath
+        cell.pictureView.image = pic.pictureFile
         
         if let _ = selectedIndexes.indexOf(indexPath) {
             cell.picPlaceholderLabel.alpha = 0.5
