@@ -81,7 +81,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             travelMap.addAnnotation(newPin)
         
             // search Flickr and update the data
-            Search().searchForPicturesWithPin(newPin, context: sharedContext)
+            Search.sharedInstance().searchForPicturesWithPin(newPin, context: sharedContext)
             
             // save the change in the CoreData
             saveContext()

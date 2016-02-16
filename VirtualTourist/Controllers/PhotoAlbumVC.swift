@@ -7,8 +7,9 @@
 //
 
 // TODO: activity indicator on loading cells
-// TODO: test the selection alpha
 // TODO: improve the picture aspect ratio
+// TODO: handle deletion of all pictures throiugh selection
+// TODO: improve the user lable message depending on state of search
 
 import UIKit
 import MapKit
@@ -39,21 +40,23 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // some UI setup
-        collectionLabel.hidden = true
-        
         // subscribe to search notifications
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "flickrSearchDidStart", name: notificationForSearchStart, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "flickrSearchDidEnd", name: notificationForSearchEnd, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "flickrSearchDidEnd:", name: notificationForSearchEnd, object: nil)
         
         // perform the fetch from CoreData
         print("💾 starting fetch in PhotoAlbum")
         do {
             try fetchedResultsController.performFetch()
             print("💾 performed PhotoAlbum fetch")
+            
         } catch let error as NSError {
             print("🆘 💾failed to perform fetch on \(__FUNCTION__), error: \(error)")
         }
+        
+        // some UI setup
+        updateUI("Didn't find anything here...")
+        updateBottomButton()
         
         // load the pin passed from TravelLocationsVC to the mapView and center the view
         locationMap.addAnnotation(pin)
@@ -61,16 +64,12 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         let region = MKCoordinateRegion(center: pin.coordinate, span: span)
         locationMap.setRegion(region, animated: true)
 
-        updateBottomButton()
-        
     }
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
     }
-    
-    // Layout the collection view
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -93,16 +92,18 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         if selectedIndexes.isEmpty {
             deleteAllPictures()
             
+            updateUI("Looking for new pictures...")
+            
             // search Flickr
-            
-            Search().searchForPicturesWithPin(pin, context: sharedContext)
-            // TODO: Update collection view after data reloaded
-            
-            self.collectionLabel.text = "Looking for photos..."
+            Search.sharedInstance().searchForPicturesWithPin(pin, context: sharedContext)
             
         } else {
             deleteSelectedPictures()
+            updateUI("You have deleted all pictures. Click \"New Collection\" to look for more.")
+            
         }
+        
+        updateBottomButton()
     }
     
     func deleteAllPictures() {
@@ -132,31 +133,27 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         print("⚡️ removed selected pictures")
     }
     
-    func updateBottomButton() {
-        if selectedIndexes.count > 0 {
-            bottomButton.title = "Remove Photos"
-        } else {
-            bottomButton.title = "New Collection"
-        }
-    }
-    
     // MARK: - 📬 Notification handling
 
     func flickrSearchDidStart() {
         print("📬 flickrSearchDidStart")
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.photoCollection.hidden = true
-            self.collectionLabel.hidden = false
-            self.collectionLabel.text = "Looking for photos..."
-            self.bottomButton.enabled = false
-        })
         
-        
+        self.bottomButton.enabled = false
+
     }
     
-    func flickrSearchDidEnd() {
+    func flickrSearchDidEnd(notification: NSNotification) {
         print("📬 flickrSearchDidEnd")
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            
+            // just in case the flickr search drops out
+            if let info = notification.userInfo where info["numberOfPics"] as! Int > 0 {
+                self.photoCollection.hidden = false
+            } else {
+                self.collectionLabel.text = "I didn't find any photos. Try again?"
+            }
+            
+//             bring back the bottom button
             self.bottomButton.enabled = true
         })
         
@@ -167,8 +164,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
         
-        cell.pictureView.image = pic.pictureFile
-//        print("configuring cell with \(pic)")
+        cell.updateWithPicture(pic.pictureFile)
         
         if let _ = selectedIndexes.indexOf(indexPath) {
             cell.pictureView.alpha = 0.5
@@ -185,21 +181,6 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section]
         let numberOfCells = sectionInfo.numberOfObjects
-        
-        if numberOfCells == 0 {
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.photoCollection.hidden = true
-                self.collectionLabel.hidden = false
-                self.collectionLabel.text = "No Photos found at this location"
-                self.updateBottomButton()
-            })
-        } else {
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.photoCollection.hidden = false
-                self.collectionLabel.hidden = true
-                self.updateBottomButton()
-            })
-        }
 
         return numberOfCells
     }
@@ -295,6 +276,27 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         
     }
     
+    // MARK: 🐵 - Helpers
+    
+    func updateUI(message: String?) {
+        if pin.pictures.count == 0 {
+            collectionLabel.hidden = false
+            self.photoCollection.hidden = true
+            
+            collectionLabel.text = message
+        } else {
+            collectionLabel.hidden = true
+            self.photoCollection.hidden = false
+        }
+    }
+    
+    func updateBottomButton() {
+        if selectedIndexes.count > 0 {
+            bottomButton.title = "Remove Photos"
+        } else {
+            bottomButton.title = "New Collection"
+        }
+    }
     
 }
 

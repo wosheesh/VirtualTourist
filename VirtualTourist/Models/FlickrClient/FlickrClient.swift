@@ -67,16 +67,15 @@ class FlickrClient: NSObject {
                     }
                     
                     // if there's multiple pages pick a random page and add it to the request parameters
-                    // don'f forget that Flickr only will only return 4000 photos so (100 per page * 40)
-                    let pageLimit = min(totalPages, 40)
+                    // don'f forget that Flickr has a limit on number of pages. It's been acting up on me though.
+                    let pageLimit = min(totalPages, 21)
                     let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
                     var withPageDictionary = methodArguments as [String : AnyObject]
                     withPageDictionary["page"] = randomPage
-        
+
+                    
                     self.taskForFlickrRequest(withPageDictionary) { (JSONResult, error) -> Void in
                         print("Lookin for pictures from page: \(randomPage)")
-                        
-                        print("results \(JSONResult)")
                         
                         if let stat = JSONResult["stat"] as? String where stat == "ok",
                             let resultsDictionary = JSONResult["photos"] as? NSDictionary,
@@ -109,8 +108,7 @@ class FlickrClient: NSObject {
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
         
-        print("☎️ Making a Flickr request...")
-        print(" 🌂  method parameter page : \(methodParameters["page"])")
+        print("☎️ Making a Flickr request for page : \(methodParameters["page"])")
         
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             

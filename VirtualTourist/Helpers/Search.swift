@@ -15,6 +15,7 @@ let notificationForSearchEnd = "com.wojtekmaterka.virtualtourist.searchend"
 class Search {
     
     /// Helper function to control the Flickr search function.
+    /// Coordinates the picture download and creation of core data entities.
     func searchForPicturesWithPin(pin: Pin, context: NSManagedObjectContext) {
         
         NSNotificationCenter.defaultCenter().postNotificationName(notificationForSearchStart, object: nil)
@@ -23,6 +24,7 @@ class Search {
             
             if let errorString = errorString {
                 print("❔ ☎️ possible error @Flickr or no pictures: \(errorString)")
+                NSNotificationCenter.defaultCenter().postNotificationName(notificationForSearchEnd, object: nil, userInfo: ["numberOfPics" : 0])
             } else if pin.managedObjectContext == nil {
                 print("💔 💾 trying to create a relationship to a deleted pin")
             } else {
@@ -31,7 +33,7 @@ class Search {
                 // instantiating new Picture objects in CoreData
                 let picturesFound = Picture.picturesFromFlickrResults(pin, results: results!, context: context)
                 
-                NSNotificationCenter.defaultCenter().postNotificationName(notificationForSearchEnd, object: nil)
+                NSNotificationCenter.defaultCenter().postNotificationName(notificationForSearchEnd, object: nil, userInfo: ["numberOfPics" : picturesFound.count])
         
                 print("💾 created \(picturesFound.count) Picture objects")
                 
@@ -75,6 +77,14 @@ class Search {
         
         task.resume()
         
+    }
+    
+    class func sharedInstance() -> Search {
+        struct Static {
+            static let instance = Search()
+        }
+        
+        return Static.instance
     }
     
 }

@@ -14,7 +14,7 @@ extension FlickrClient {
     struct Constants {
         static let BASE_URL = "https://api.flickr.com/services/rest/"
         static let METHOD_NAME = "flickr.photos.search"
-        static let API_KEY = "158ec8315e07a0e93044f2e16e9c8e76"
+        private static let API_KEY = "158ec8315e07a0e93044f2e16e9c8e76"
         static let EXTRAS = "url_m"
         static let SAFE_SEARCH = "1"
         static let DATA_FORMAT = "json"
