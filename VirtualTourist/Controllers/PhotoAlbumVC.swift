@@ -6,10 +6,7 @@
 //  Copyright © 2016 Wojtek Materka. All rights reserved.
 //
 
-// TODO: activity indicator on loading cells
 // TODO: improve the picture aspect ratio
-// TODO: handle deletion of all pictures throiugh selection
-// TODO: improve the user lable message depending on state of search
 
 import UIKit
 import MapKit
@@ -164,7 +161,9 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
         
-        cell.updateWithPicture(pic.pictureFile)
+        NSOperationQueue.mainQueue().addOperationWithBlock() {  
+            cell.updateWithPicture(pic.pictureFile)
+        }
         
         if let _ = selectedIndexes.indexOf(indexPath) {
             cell.pictureView.alpha = 0.5
@@ -185,6 +184,7 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         return numberOfCells
     }
     
+    
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PictureCell", forIndexPath: indexPath) as! PictureCell
         
@@ -194,7 +194,6 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     }
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PictureCell
         
         // toggle the cell presences in the helper index
         if let index = selectedIndexes.indexOf(indexPath) {
@@ -203,8 +202,10 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             selectedIndexes.append(indexPath)
         }
         
-        // change the appearance of the cell
-        configureCell(cell, atIndexPath: indexPath)
+        // change the appearance of the cell if it is visible
+        if let cell = collectionView.cellForItemAtIndexPath(indexPath) as? PictureCell {
+            configureCell(cell, atIndexPath: indexPath)
+        }
         
         // change the bottom button text
         updateBottomButton()
