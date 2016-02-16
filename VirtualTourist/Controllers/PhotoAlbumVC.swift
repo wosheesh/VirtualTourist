@@ -6,6 +6,10 @@
 //  Copyright © 2016 Wojtek Materka. All rights reserved.
 //
 
+// TODO: activity indicator on loading cells
+// TODO: test the selection alpha
+// TODO: improve the picture aspect ratio
+
 import UIKit
 import MapKit
 import CoreData
@@ -56,8 +60,6 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         let span = MKCoordinateSpanMake(0.5, 0.5)
         let region = MKCoordinateRegion(center: pin.coordinate, span: span)
         locationMap.setRegion(region, animated: true)
-        
-
 
         updateBottomButton()
         
@@ -66,6 +68,23 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
 
+    }
+    
+    // Layout the collection view
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // Lay out the collection view so that cells take up 1/3 of the width,
+        // with no space in between.
+        let layout : UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        
+        let width = floor(self.photoCollection.frame.size.width/3)
+        layout.itemSize = CGSize(width: width, height: width)
+        photoCollection.collectionViewLayout = layout
     }
     
     // MARK: - 💥 Actions
@@ -143,39 +162,18 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         
     }
     
-    // MARK: - 💾 Core Data
-    
-    lazy var fetchedResultsController: NSFetchedResultsController = {
-        let fetchRequest = NSFetchRequest(entityName: "Picture")
-        fetchRequest.sortDescriptors = []
-        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin)
-        
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
-        fetchedResultsController.delegate = self
-        print("💾 instantiated fetchedREsultsController in PhotoAlbum")
-        return fetchedResultsController
-    }()
-    
-    var sharedContext: NSManagedObjectContext {
-        return CoreDataStackManager.sharedInstance().managedObjectContext
-    }
-    
-    func saveContext() {
-        CoreDataStackManager.sharedInstance().saveContext()
-    }
-    
-    
-    // MARK: -  UICollectionViewDelegate, UICollectionViewDataSource
+    // MARK: - 🗃 UICollectionViewDelegate, UICollectionViewDataSource
     
     func configureCell(cell: PictureCell, atIndexPath indexPath: NSIndexPath) {
         let pic = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Picture
         
         cell.pictureView.image = pic.pictureFile
+//        print("configuring cell with \(pic)")
         
         if let _ = selectedIndexes.indexOf(indexPath) {
-            cell.picPlaceholderLabel.alpha = 0.5
+            cell.pictureView.alpha = 0.5
         } else {
-            cell.picPlaceholderLabel.alpha = 1.0
+            cell.pictureView.alpha = 1.0
         }
         
     }
@@ -203,7 +201,6 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
             })
         }
 
-        print("number of pictureCells: \(numberOfCells)")
         return numberOfCells
     }
     
@@ -231,16 +228,37 @@ class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegat
         // change the bottom button text
         updateBottomButton()
     }
+    
+    
+    // MARK: - 💾 Core Data
+    
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Picture")
+        fetchRequest.sortDescriptors = []
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin)
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        print("💾 instantiated fetchedREsultsController in PhotoAlbum")
+        return fetchedResultsController
+    }()
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStackManager.sharedInstance().managedObjectContext
+    }
+    
+    func saveContext() {
+        CoreDataStackManager.sharedInstance().saveContext()
+    }
+    
 
     // MARK: - 🐕 Fetched Results Controller Delegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        print(" 🐕 in controllerWillChangeContent")
         
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
         updatedIndexPaths = [NSIndexPath]()
-        
 
     }
     

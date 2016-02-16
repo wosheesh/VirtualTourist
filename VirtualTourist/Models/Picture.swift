@@ -32,8 +32,17 @@ class Picture: NSManagedObject {
         
         // store the path to the picture of Flickr
         flickrPath = path
+         
+    }
+    
+    var pictureFile: UIImage? {
+        get {
+            return FlickrClient.Caches.pictureCache.pictureWithIdentifier(picturePath)
+        }
         
-        
+        set {
+            return FlickrClient.Caches.pictureCache.storePicture(newValue, withIdentifier: picturePath!)
+        }
     }
     
     // MARK: - Convenience
@@ -50,24 +59,12 @@ class Picture: NSManagedObject {
             newPicture.pin = pin
             
             pictures.append(newPicture)
-            
         }
         
         return pictures
     }
     
-    var pictureFile: UIImage? {
-        get {
-            return FlickrClient.Caches.pictureCache.pictureWithIdentifier(picturePath)
-        }
-        
-        set {
-            return FlickrClient.Caches.pictureCache.storePicture(newValue, withIdentifier: picturePath!)
-        }
-    }
-    
-    
-    // TODO: image function to return or delete UIImage from Documents / Cache
+    /// Delete all files if picture is being deleted
     override func prepareForDeletion() {
         //Delete associated image files from imagePath automatically
         if let fileName = picturePath {
@@ -81,6 +78,8 @@ class Picture: NSManagedObject {
                 print("🆘 📂 Couldn't delete a picture file")
             }
 
+        } else {
+            print("🆘 📂 Couldn't find a picture file for deletion" )
         }
     }
     

@@ -21,7 +21,6 @@ class PictureCache {
         let path = pathForIdentifier(identifier!)
         
         if let data = NSData(contentsOfFile: path) {
-            print("📂 retriving picture from file")
             return UIImage(data: data)
         }
         
@@ -30,7 +29,6 @@ class PictureCache {
     
     // MARK: - Saving pictures
     func storePicture(picture: UIImage?, withIdentifier identifier: String) {
-        print("📂 storing picture on disk")
         
         let path = pathForIdentifier(identifier)
         let data = UIImageJPEGRepresentation(picture!, 1.0)!
