@@ -12,14 +12,14 @@ import CoreData
 
 class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsControllerDelegate {
     
-    // MARK: - Properties
+    // MARK: - 🎛 Properties
     
     @IBOutlet weak var travelMap: MKMapView!
     @IBOutlet weak var editButton: UIBarButtonItem!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var bottomInfoLabel: UILabel!
 
-    // MARK: - Lifecycle
+    // MARK: - 🔄 Lifecycle
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -54,11 +54,12 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         travelMap.addGestureRecognizer(longPress)
     }
     
-    // MARK: - Actions
+    // MARK: - 💥 Actions
     
     var pinToBeAdded: Pin? = nil
     
-    /// Adds a pin to the mapView and a Pin object to CoreData
+    /// Adds a pin to the mapView and a Pin object to CoreData.
+    /// Manages the drag gesture of the pin.
     func userPressedOnMap(gestureRecognizer: UIGestureRecognizer) {
         
         let touchPoint = gestureRecognizer.locationInView(travelMap)
@@ -66,12 +67,14 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         
         switch gestureRecognizer.state {
         case .Began:
-            pinToBeAdded = Pin(annotationLatitude: touchCoord.latitude, annotationLongitude: touchCoord.longitude, context: sharedContext)
+            pinToBeAdded = Pin(annotationLatitude: touchCoord.latitude,
+                annotationLongitude: touchCoord.longitude, context: sharedContext)
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.travelMap.addAnnotation(self.pinToBeAdded!)
             })
         
-        /// using
+        // using KVO manually to allow the map view to re-read 
+        // the coordinate property through the pinToBeAdded object
         case .Changed:
             pinToBeAdded!.willChangeValueForKey("coordinate")
             pinToBeAdded!.coordinate = touchCoord
@@ -87,25 +90,20 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         
     }
     
-    /// Switches the top right button between Edit/Done and shows/hides
-    /// the bottom info label. Button title is used later in 
-    /// `mapView(_:didSelectAnnotationView:)` as the indicator
+    /// Updates the UI for editing or deleting state. 
+    /// The button state is later used to distinguish the edition state
     @IBAction func editButtonTouchUp(sender: AnyObject) {
         if editButton.title == "Edit" {
             editButton.title = "Done"
-            
-            // push the deleting info label
             hideBottomInfoLabel(false)
         } else {
             editButton.title = "Edit"
-            
-            // remove the deleting info label
             hideBottomInfoLabel(true)
         }
         
     }
     
-    // MARK: - CoreData Helpers
+    // MARK: - 💾 CoreData Helpers
     
     func loadAllPins() -> [Pin] {
         let fetchRequest = NSFetchRequest(entityName: "Pin")
@@ -133,7 +131,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         CoreDataStackManager.sharedInstance().saveContext()
     }
     
-    // MARK: - MKMapViewDelegate
+    // MARK: - 🗺 MKMapViewDelegate
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
@@ -191,11 +189,9 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
 
     }
     
+    // MARK: - 🐵 Helpers
     
-    // MARK: - Helpers
-    
-    /// switches the visibility of the text label on the
-    /// stackView informing user on tapping the pins to delete
+    /// switches the visibility of the text label on the stackView
     func hideBottomInfoLabel(show: Bool) {
         dispatch_async(dispatch_get_main_queue()) {
             UIView.animateWithDuration(0.25) { () -> Void in

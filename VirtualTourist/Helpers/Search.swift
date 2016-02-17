@@ -79,6 +79,8 @@ class Search {
         
     }
     
+    // MARK: - Singleton
+    
     class func sharedInstance() -> Search {
         struct Static {
             static let instance = Search()

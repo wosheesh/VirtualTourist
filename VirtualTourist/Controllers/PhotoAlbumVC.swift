@@ -15,7 +15,7 @@ import CoreData
 
 class PhotoAlbumVC: UIViewController, MKMapViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, NSFetchedResultsControllerDelegate {
     
-    // MARK: - Properties
+    // MARK: - 🎛 Properties
     
     // used to keep track of selected picture cells - for UI updates and deletions.
     var selectedIndexes = [NSIndexPath]()

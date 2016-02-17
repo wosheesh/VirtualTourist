@@ -9,12 +9,18 @@
 import CoreData
 import MapKit
 
+@objc
+
 // Making Pin a subclass of MKAnnotation for easier interfacing with mapViews
 class Pin: NSManagedObject, MKAnnotation {
+    
+    // MARK: - 🎛 Properties
     
     @NSManaged var latitude: NSNumber
     @NSManaged var longitude: NSNumber
     @NSManaged var pictures: [Picture]
+    
+    // MARK: - 🌱 Init
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -31,7 +37,8 @@ class Pin: NSManagedObject, MKAnnotation {
         longitude = NSNumber(double: annotationLongitude)
     }
     
-    // MKAnnotation subclass
+    // MARK: - 📍 MKAnnotation subclass
+    
     var coordinate: CLLocationCoordinate2D {
         get {
             return CLLocationCoordinate2D(latitude: latitude as Double, longitude: longitude as Double)
@@ -42,4 +49,5 @@ class Pin: NSManagedObject, MKAnnotation {
             longitude = newValue.longitude
         }
     }
+    
 }

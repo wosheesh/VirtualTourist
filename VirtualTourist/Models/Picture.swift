@@ -12,17 +12,27 @@ import Foundation
 
 class Picture: NSManagedObject {
     
-    // MARK: - Properties
+    // MARK: - 🎛 Properties
     
     @NSManaged var picturePath: String?
     @NSManaged var flickrPath: String
     @NSManaged var pin: Pin?
     
+    var pictureFile: UIImage? {
+        get {
+            return FlickrClient.Caches.pictureCache.pictureWithIdentifier(picturePath)
+        }
+        
+        set {
+            return FlickrClient.Caches.pictureCache.storePicture(newValue, withIdentifier: picturePath!)
+        }
+    }
+    
+    // MARK: - 🌱 Init
+    
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
-    
-    // MARK: - Init
     
     init(path: String, context: NSManagedObjectContext) {
         
@@ -35,17 +45,7 @@ class Picture: NSManagedObject {
          
     }
     
-    var pictureFile: UIImage? {
-        get {
-            return FlickrClient.Caches.pictureCache.pictureWithIdentifier(picturePath)
-        }
-        
-        set {
-            return FlickrClient.Caches.pictureCache.storePicture(newValue, withIdentifier: picturePath!)
-        }
-    }
-    
-    // MARK: - Convenience
+    // MARK: 💁 - Convenience
     
     /// Make a picture object out of an array of Flickr JSON objects. Returns an array of Pictures.
     static func picturesFromFlickrResults(pin: Pin, results: [[String: AnyObject]], context: NSManagedObjectContext) -> [Picture] {

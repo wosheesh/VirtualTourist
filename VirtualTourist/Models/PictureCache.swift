@@ -8,11 +8,13 @@
 
 import UIKit
 
+// At this stage PictureCache uses disk only. No NSCache().
+
 class PictureCache {
     
-    // MARK: - Properties
+    // MARK: - 📂 Retreiving pictures
     
-    // MARK: - Retreiving pictures
+    /// Returns an UIImage given a String identifier.
     func pictureWithIdentifier(identifier: String?) -> UIImage? {
         if identifier == nil || identifier! == "" {
             return nil
@@ -27,7 +29,9 @@ class PictureCache {
         return nil
     }
     
-    // MARK: - Saving pictures
+    // MARK: - 💁 Convenience
+    
+    /// Saves a picture on disk with a an identifier as file name.
     func storePicture(picture: UIImage?, withIdentifier identifier: String) {
         
         let path = pathForIdentifier(identifier)
@@ -35,7 +39,9 @@ class PictureCache {
         data.writeToFile(path, atomically: true)
     }
     
-    // MARK: - Helpers
+    // MARK: - 🐵 Helpers
+    
+    /// Returns a file path as String given an identifier.
     func pathForIdentifier(identifier: String) -> String {
         let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
         let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)

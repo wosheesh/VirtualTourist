@@ -11,7 +11,7 @@ import MapKit
 
 class FlickrClient: NSObject {
     
-    // MARK: - Properties
+    // MARK: - 🎛 Properties
     var session = NSURLSession.sharedSession()
     
     // cache
@@ -19,7 +19,7 @@ class FlickrClient: NSObject {
         static let pictureCache = PictureCache()
     }
     
-    // MARK: - Flickr API
+    // MARK: - ☎️ Flickr API
     
     /// Searches Flickr for pictures around "bbox" area and returns an array of up to PICTURE_FETCH_LIMIT
     /// JSON-formatted photo objects. If Flickr had no photos in the area returns an errorString.
@@ -159,7 +159,8 @@ class FlickrClient: NSObject {
   
     }
     
-    // MARK: Coordinate manipulation
+    // MARK: - 🐵 Helpers
+    
     /// Used to create a bounding box for flickr geo query.
     /// Returns a String that can be used in "bbox" API argument.
     func createBoundingBoxString(coords: CLLocationCoordinate2D) -> String {
@@ -176,7 +177,6 @@ class FlickrClient: NSObject {
         return "\(bottom_left_lon),\(bottom_left_lat),\(top_right_lon),\(top_right_lat)"
     }
     
-    // MARK: Escape HTML Parameters
     func escapedParameters(parameters: [String : AnyObject]) -> String {
         
         var urlVars = [String]()
