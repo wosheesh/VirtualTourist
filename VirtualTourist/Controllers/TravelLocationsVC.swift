@@ -18,8 +18,6 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     @IBOutlet weak var editButton: UIBarButtonItem!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var bottomInfoLabel: UILabel!
-    
-    let searchFlickr = Search()
 
     // MARK: - Lifecycle
     
@@ -29,8 +27,6 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         // reset the title
         navigationItem.title = "Virtual Tourist"
         
-        // hide the info label
-//        bottomInfoLabel.hidden = true
 
     }
 
@@ -45,14 +41,12 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
             print("🆘📍Failed to perform fetch for Pins")
         }
 
-        // set the delegate for fetchedResultsController
+        // set the delegates
         fetchedResultsController.delegate = self
+        travelMap.delegate = self
         
-        // load all locations as Pins from context
-        let locations = loadAllPins()
-        
-        // add annotations to the mapView
-        travelMap.addAnnotations(locations)
+        // load and add Pins to the mapView
+        travelMap.addAnnotations(loadAllPins())
         
         // add a gesture recogniser to the map for adding pins
         let longPress = UILongPressGestureRecognizer(target: self, action: "userPressedOnMap:")
@@ -62,31 +56,35 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
     
     // MARK: - Actions
     
+    var pinToBeAdded: Pin? = nil
+    
     /// Adds a pin to the mapView and a Pin object to CoreData
     func userPressedOnMap(gestureRecognizer: UIGestureRecognizer) {
-        
-        // TODO: implement drag gesture
         
         let touchPoint = gestureRecognizer.locationInView(travelMap)
         let touchCoord = travelMap.convertPoint(touchPoint, toCoordinateFromView: travelMap)
         
-        if UIGestureRecognizerState.Began == gestureRecognizer.state {
-            
-            // create a new Pin object in CoreData
-            let newPin = Pin(annotationLatitude: touchCoord.latitude,
-                annotationLongitude: touchCoord.longitude,
-                context: sharedContext)
-            
-            // add the new annotation to the map
-            travelMap.addAnnotation(newPin)
+        switch gestureRecognizer.state {
+        case .Began:
+            pinToBeAdded = Pin(annotationLatitude: touchCoord.latitude, annotationLongitude: touchCoord.longitude, context: sharedContext)
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.travelMap.addAnnotation(self.pinToBeAdded!)
+            })
         
-            // search Flickr and update the data
-            Search.sharedInstance().searchForPicturesWithPin(newPin, context: sharedContext)
+        /// using
+        case .Changed:
+            pinToBeAdded!.willChangeValueForKey("coordinate")
+            pinToBeAdded!.coordinate = touchCoord
+            pinToBeAdded!.didChangeValueForKey("coordinate")
             
-            // save the change in the CoreData
+        case .Ended:
+            Search.sharedInstance().searchForPicturesWithPin(pinToBeAdded!, context: sharedContext)
             saveContext()
             
+        default:
+            return
         }
+        
     }
     
     /// Switches the top right button between Edit/Done and shows/hides
@@ -192,6 +190,7 @@ class TravelLocationsVC: UIViewController, MKMapViewDelegate, NSFetchedResultsCo
         }
 
     }
+    
     
     // MARK: - Helpers
     
